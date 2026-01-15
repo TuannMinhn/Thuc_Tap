@@ -38,6 +38,17 @@ const Dashboard = () => {
     };
 
     const handleUseSample = () => {
+        const savedConfig = localStorage.getItem('landingPageConfig');
+        if (savedConfig) {
+            const shouldResume = window.confirm("Bạn có muốn tiếp tục chỉnh sửa bản lưu trước đó không?\nNhấn OK để tiếp tục, Cancel để tải lại mẫu gốc (sẽ mất thay đổi cũ).");
+            if (shouldResume) {
+                // Config already loaded in context from localStorage, so just navigate
+                navigate('/editor');
+                return;
+            }
+        }
+
+        // If no save or user chose to reset
         setConfig(sampleConfig);
         navigate('/editor');
     };

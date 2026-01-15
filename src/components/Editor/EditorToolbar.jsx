@@ -1,6 +1,6 @@
 import React from 'react';
 import { useBuilder } from '../../context/BuilderContext';
-import { Edit2, Eye, Save, Download } from 'lucide-react';
+import { Edit2, Eye, Save, Download, ExternalLink } from 'lucide-react';
 
 const EditorToolbar = () => {
     const { isEditing, setIsEditing, config } = useBuilder();
@@ -18,6 +18,13 @@ const EditorToolbar = () => {
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+            <button
+                onClick={() => window.open('/preview', '_blank')}
+                className="bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-all flex items-center justify-center tooltip-container"
+                title="Xem trang thực tế (New Tab)"
+            >
+                <ExternalLink size={24} />
+            </button>
             {isEditing && (
                 <button
                     onClick={handleExport}
