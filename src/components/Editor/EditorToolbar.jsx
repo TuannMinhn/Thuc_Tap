@@ -6,10 +6,11 @@ const EditorToolbar = () => {
     const { isEditing, setIsEditing, config } = useBuilder();
 
     const handleExport = () => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+        const fileContent = `export const landingPageConfig = ${JSON.stringify(config, null, 4)};`;
+        const dataStr = "data:text/javascript;charset=utf-8," + encodeURIComponent(fileContent);
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "landing_page_config.json");
+        downloadAnchorNode.setAttribute("download", "landingPageConfig.js");
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();

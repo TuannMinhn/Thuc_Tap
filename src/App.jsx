@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import PageBuilder from './components/Builder/PageBuilder';
+import Dashboard from './components/Dashboard/Dashboard'; // Import Dashboard
 import { BuilderProvider, useBuilder } from './context/BuilderContext';
 import EditorToolbar from './components/Editor/EditorToolbar';
 import PropertyModal from './components/Editor/PropertyModal';
@@ -48,7 +49,8 @@ function App() {
     <BrowserRouter>
       <BuilderProvider>
         <Routes>
-          <Route path="/" element={<RouteHandler mode="public" />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/preview" element={<RouteHandler mode="public" />} />
           <Route path="/editor" element={<RouteHandler mode="admin" />} />
         </Routes>
       </BuilderProvider>

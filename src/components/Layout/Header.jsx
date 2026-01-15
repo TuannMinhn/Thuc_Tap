@@ -47,7 +47,7 @@ const Header = ({ config }) => {
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedComponent({ type: 'Header', data: config.header });
+                                setSelectedComponent({ type: 'Header', data: config });
                             }}
                             className="flex items-center gap-1 px-3 py-2 hover:bg-blue-50 text-blue-600 font-medium text-xs border-r transition-colors"
                         >
@@ -56,7 +56,7 @@ const Header = ({ config }) => {
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedComponent({ type: 'Header', data: config.header });
+                                setSelectedComponent({ type: 'Header', data: config });
                             }}
                             className="p-2 hover:bg-gray-100 text-gray-400 cursor-help border-r"
                             title="Thêm menu (Vào cài đặt)"
@@ -66,7 +66,7 @@ const Header = ({ config }) => {
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedComponent({ type: 'Header', data: config.header });
+                                setSelectedComponent({ type: 'Header', data: config });
                             }}
                             className="p-2 hover:bg-red-50 text-red-500"
                             title="Xóa/Ẩn Header"

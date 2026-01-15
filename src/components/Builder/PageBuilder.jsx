@@ -9,6 +9,7 @@ import Steps from '../Content/Steps';
 import Prize from '../Content/Prize';
 import { useBuilder } from '../../context/BuilderContext';
 import SectionControls from '../Editor/SectionControls';
+import SectionCarousel from './SectionCarousel';
 import ComponentPickerModal from '../Editor/ComponentPickerModal';
 import ConfirmationModal from '../Editor/ConfirmationModal';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -163,97 +164,120 @@ const PageBuilder = ({ sections: propSections }) => {
             onDragEnd={handleDragEnd}
         >
             <main className={isEditing ? "pb-24" : ""}>
-                {sections.map((section, sectionIndex) => (
-                    <div
-                        key={section.id || sectionIndex}
-                        id={section.id}
-                        className={`relative group ${isEditing ? 'hover:outline-2 hover:outline-blue-400 hover:outline-dashed transition-all' : ''}`}
-                    >
+                {sections.map((section, sectionIndex) => {
+                    // Logic for hidden sections
+                    if (section.hidden && !isEditing) return null;
 
-                        {isEditing && (
-                            <SectionControls
-                                section={section}
-                                index={sectionIndex}
-                                isFirst={sectionIndex === 0}
-                                isLast={sectionIndex === sections.length - 1}
-                            />
-                        )}
+                    return (
+                        <div
+                            key={section.id || sectionIndex}
+                            id={section.id}
+                            className={`relative group ${isEditing ? 'hover:outline-2 hover:outline-blue-400 hover:outline-dashed transition-all' : ''} ${section.hidden ? 'opacity-50 grayscale border-2 border-dashed border-yellow-400 m-2 rounded' : ''}`}
+                        >
+                            {/* Hidden Indicator */}
+                            {section.hidden && isEditing && (
+                                <div className="absolute top-0 left-0 bg-yellow-400 text-yellow-900 text-xs px-2 py-1 font-bold z-20 rounded-br">
+                                    ĐANG ẨN (CHỈ HIỆN VỚI ADMIN)
+                                </div>
+                            )}
 
-                        <Section style={section.style}>
-                            <div
-                                className={`grid gap-6 ${section.layout === '2-col' ? 'items-center' : ''}`}
-                                style={{
-                                    gridTemplateColumns: `repeat(${parseInt(section.layout) || 1}, minmax(0, 1fr))`
-                                }}
-                            >
-                                {section.columns.map((column, colIndex) => {
-                                    // Determine Alignment for Components (Layout Alignment)
-                                    const align = section.style?.textAlign || 'text-left';
-                                    const itemsAlign = {
-                                        'text-left': 'items-start',
-                                        'text-center': 'items-center',
-                                        'text-right': 'items-end',
-                                        'text-justify': 'items-stretch'
-                                    }[align] || 'items-start';
+                            {isEditing && (
+                                <SectionControls
+                                    section={section}
+                                    index={sectionIndex}
+                                    isFirst={sectionIndex === 0}
+                                    isLast={sectionIndex === sections.length - 1}
+                                />
+                            )}
+
+                            <Section style={section.style}>
+                                {(() => {
+                                    const columnContent = section.columns.map((column, colIndex) => {
+                                        // Determine Alignment for Components (Layout Alignment)
+                                        const align = section.style?.textAlign || 'text-left';
+                                        const itemsAlign = {
+                                            'text-left': 'items-start',
+                                            'text-center': 'items-center',
+                                            'text-right': 'items-end',
+                                            'text-justify': 'items-stretch'
+                                        }[align] || 'items-start';
+
+                                        return (
+                                            <div key={colIndex} className={`flex flex-col gap-6 h-full ${itemsAlign} ${isEditing ? 'min-h-[50px] p-2 border border-transparent hover:border-blue-200 rounded' : ''}`}>
+                                                <SortableContext
+                                                    items={column.components.map(c => c.id)}
+                                                    strategy={verticalListSortingStrategy}
+                                                >
+                                                    {column.components.map((component, compIndex) => {
+                                                        const ComponentToRender = COMPONENT_MAP[component.type];
+                                                        if (!ComponentToRender) return null;
+                                                        return (
+                                                            <SortableItem
+                                                                key={component.id || compIndex} // Prefer ID
+                                                                id={component.id}
+                                                                isEditing={isEditing}
+                                                                onClick={(e) => handleComponentClick(e, section.id, colIndex, compIndex, component)}
+                                                                className={`relative group/comp ${isEditing ? 'cursor-pointer hover:ring-2 hover:ring-blue-500 rounded p-1 transition-all' : ''}`}
+                                                            >
+                                                                <ComponentToRender data={component.data} isEditing={isEditing} />
+                                                                {isEditing && (
+                                                                    <div className="absolute top-0 right-0 flex rounded-bl overflow-hidden opacity-0 group-hover/comp:opacity-100 pointer-events-none transition-opacity">
+                                                                        <button
+                                                                            className="bg-blue-500 text-white text-xs px-2 py-1 hover:bg-blue-600 pointer-events-auto"
+                                                                        >
+                                                                            Sửa
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={(e) => handleDeleteClick(e, section.id, colIndex, compIndex)}
+                                                                            className="bg-red-500 text-white text-xs px-2 py-1 hover:bg-red-600 pointer-events-auto flex items-center"
+                                                                            title="Xóa"
+                                                                        >
+                                                                            <Trash2 size={12} />
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </SortableItem>
+                                                        );
+                                                    })}
+                                                </SortableContext>
+
+                                                {/* Add Component Button for Empty or Non-Empty Columns */}
+                                                {isEditing && (
+                                                    <button
+                                                        onClick={() => handleAddComponent(section.id, colIndex)}
+                                                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-blue-400 hover:text-blue-500 flex items-center justify-center gap-2 transition-colors"
+                                                    >
+                                                        <PlusCircle size={18} /> Thêm TP
+                                                    </button>
+                                                )}
+
+                                            </div>
+                                        );
+                                    });
+
+                                    if (section.enableCarousel) {
+                                        return (
+                                            <SectionCarousel settings={section.carouselSettings} isEditing={isEditing}>
+                                                {columnContent}
+                                            </SectionCarousel>
+                                        );
+                                    }
 
                                     return (
-                                        <div key={colIndex} className={`flex flex-col gap-6 h-full ${itemsAlign} ${isEditing ? 'min-h-[50px] p-2 border border-transparent hover:border-blue-200 rounded' : ''}`}>
-                                            <SortableContext
-                                                items={column.components.map(c => c.id)}
-                                                strategy={verticalListSortingStrategy}
-                                            >
-                                                {column.components.map((component, compIndex) => {
-                                                    const ComponentToRender = COMPONENT_MAP[component.type];
-                                                    if (!ComponentToRender) return null;
-                                                    return (
-                                                        <SortableItem
-                                                            key={component.id || compIndex} // Prefer ID
-                                                            id={component.id}
-                                                            isEditing={isEditing}
-                                                            onClick={(e) => handleComponentClick(e, section.id, colIndex, compIndex, component)}
-                                                            className={`relative group/comp ${isEditing ? 'cursor-pointer hover:ring-2 hover:ring-blue-500 rounded p-1 transition-all' : ''}`}
-                                                        >
-                                                            <ComponentToRender data={component.data} isEditing={isEditing} />
-                                                            {isEditing && (
-                                                                <div className="absolute top-0 right-0 flex rounded-bl overflow-hidden opacity-0 group-hover/comp:opacity-100 pointer-events-none transition-opacity">
-                                                                    <button
-                                                                        className="bg-blue-500 text-white text-xs px-2 py-1 hover:bg-blue-600 pointer-events-auto"
-                                                                    // Dnd swallows clicks sometimes if dragging starts. 
-                                                                    // But PointerSensor usually handles it.
-                                                                    >
-                                                                        Sửa
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={(e) => handleDeleteClick(e, section.id, colIndex, compIndex)}
-                                                                        className="bg-red-500 text-white text-xs px-2 py-1 hover:bg-red-600 pointer-events-auto flex items-center"
-                                                                        title="Xóa"
-                                                                    >
-                                                                        <Trash2 size={12} />
-                                                                    </button>
-                                                                </div>
-                                                            )}
-                                                        </SortableItem>
-                                                    );
-                                                })}
-                                            </SortableContext>
-
-                                            {/* Add Component Button for Empty or Non-Empty Columns */}
-                                            {isEditing && (
-                                                <button
-                                                    onClick={() => handleAddComponent(section.id, colIndex)}
-                                                    className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-blue-400 hover:text-blue-500 flex items-center justify-center gap-2 transition-colors"
-                                                >
-                                                    <PlusCircle size={18} /> Thêm TP
-                                                </button>
-                                            )}
-
+                                        <div
+                                            className={`grid gap-6 ${section.layout === '2-col' ? 'items-center' : ''}`}
+                                            style={{
+                                                gridTemplateColumns: `repeat(${parseInt(section.layout) || 1}, minmax(0, 1fr))`
+                                            }}
+                                        >
+                                            {columnContent}
                                         </div>
                                     );
-                                })}
-                            </div>
-                        </Section>
-                    </div>
-                ))}
+                                })()}
+                            </Section>
+                        </div>
+                    );
+                })}
 
                 <ComponentPickerModal
                     isOpen={pickerOpen}

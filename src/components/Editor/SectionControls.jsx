@@ -1,6 +1,6 @@
 import React from 'react';
 import { useBuilder } from '../../context/BuilderContext';
-import { Trash2, ArrowUp, ArrowDown, Plus, Layout, Palette, Settings } from 'lucide-react';
+import { Trash2, ArrowUp, ArrowDown, Plus, Layout, Palette, Settings, Eye, EyeOff } from 'lucide-react';
 
 const SectionControls = ({ section, index, isFirst, isLast }) => {
     const { actions, setActiveSectionId } = useBuilder();
@@ -17,6 +17,14 @@ const SectionControls = ({ section, index, isFirst, isLast }) => {
             <div className="w-px bg-gray-300 mx-1"></div>
             <button onClick={openSettings} className="p-1.5 hover:bg-blue-100 text-blue-600 rounded flex items-center gap-1" title="Cài đặt Section (Cột, Màu nền...)">
                 <Settings size={16} /> <span className="text-xs font-bold">Cài đặt</span>
+            </button>
+            <div className="w-px bg-gray-300 mx-1"></div>
+            <button
+                onClick={() => actions.updateSection(section.id, { hidden: !section.hidden })}
+                className={`p-1.5 rounded hover:bg-yellow-50 ${section.hidden ? 'text-yellow-600 bg-yellow-50' : 'text-gray-400 hover:text-gray-600'}`}
+                title={section.hidden ? "Hiện lại" : "Ẩn section này"}
+            >
+                {section.hidden ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
             <div className="w-px bg-gray-300 mx-1"></div>
             <button onClick={() => addSection(index)} className="p-1.5 hover:bg-green-100 text-green-600 rounded" title="Thêm dòng mới"><Plus size={16} /></button>

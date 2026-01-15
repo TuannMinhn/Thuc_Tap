@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useBuilder } from '../../context/BuilderContext';
-import { X, Save, Layout, Palette, Monitor, AlignLeft, AlignCenter, AlignRight, Plus, Trash2, Check } from 'lucide-react';
+import { X, Save, Layout, Palette, Monitor, AlignLeft, AlignCenter, AlignRight, Plus, Trash2, Check, GalleryHorizontal } from 'lucide-react';
 import useLockBodyScroll from '../../hooks/useLockBodyScroll';
 
 const SectionSettingsModal = () => {
@@ -230,6 +230,47 @@ const SectionSettingsModal = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Carousel Toggle */}
+                        <div className="pt-3 border-t border-gray-100">
+                            <label className="flex items-center justify-between cursor-pointer group p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                                <div>
+                                    <div className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                        <GalleryHorizontal size={16} className="text-blue-500" />
+                                        Chế độ Carousel (Slide)
+                                    </div>
+                                    <div className="text-xs text-gray-400 mt-0.5">Biến các cột thành slide trượt ngang</div>
+                                </div>
+                                <div className="relative">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={formData.enableCarousel || false}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, enableCarousel: e.target.checked }))}
+                                    />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </div>
+                            </label>
+
+                            {formData.enableCarousel && (
+                                <div className="mt-3 pl-2 border-l-2 border-blue-100 animate-in fade-in slide-in-from-top-1">
+                                    <label className="block text-xs font-medium text-gray-600 mb-2">Số lượng hiển thị (Desktop)</label>
+                                    <select
+                                        value={formData.carouselSettings?.slidesPerView || 3}
+                                        onChange={(e) => setFormData(prev => ({
+                                            ...prev,
+                                            carouselSettings: { ...prev.carouselSettings, slidesPerView: parseFloat(e.target.value) }
+                                        }))}
+                                        className="w-full p-2 text-sm border rounded bg-white"
+                                    >
+                                        <option value="1">1 Slide / Khung hình</option>
+                                        <option value="2">2 Slides / Khung hình</option>
+                                        <option value="3">3 Slides / Khung hình</option>
+                                        <option value="4">4 Slides / Khung hình</option>
+                                    </select>
+                                </div>
+                            )}
+                        </div>
                     </section>
 
                     <hr className="border-gray-100" />
@@ -383,23 +424,35 @@ const SectionSettingsModal = () => {
                                 <div className="space-y-2">
                                     <button
                                         onClick={() => handleConfirmSave(true)}
-                                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+                                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-all flex items-start px-4 gap-3 text-left group"
                                     >
-                                        <AlignLeft size={16} /> Có, áp dụng tất cả
+                                        <div className="mt-1 p-1 bg-white/20 rounded ring-1 ring-white/30">
+                                            <AlignLeft size={18} />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-sm">Lưu & Đồng bộ tất cả</div>
+                                            <div className="text-xs opacity-90 font-normal">Áp dụng cài đặt này cho cả nội dung con</div>
+                                        </div>
                                     </button>
 
                                     <button
                                         onClick={() => handleConfirmSave(false)}
-                                        className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md font-medium transition-colors"
+                                        className="w-full py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg shadow-sm transition-all flex items-start px-4 gap-3 text-left"
                                     >
-                                        Không, chỉ lưu vỏ bảng
+                                        <div className="mt-1 p-1 bg-gray-100 rounded ring-1 ring-gray-200 text-gray-500">
+                                            <Layout size={18} />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-sm">Chỉ lưu vỏ (Container)</div>
+                                            <div className="text-xs text-gray-500 font-normal">Giữ nguyên định dạng riêng của nội dung con</div>
+                                        </div>
                                     </button>
 
                                     <button
                                         onClick={() => setShowSaveConfirm(false)}
-                                        className="w-full py-2.5 text-gray-500 hover:text-gray-700 font-medium transition-colors text-sm mt-2"
+                                        className="w-full py-2 text-gray-400 hover:text-gray-600 font-medium transition-colors text-xs hover:underline mt-1"
                                     >
-                                        Hủy bỏ
+                                        Hủy bỏ, quay lại
                                     </button>
                                 </div>
                             </div>

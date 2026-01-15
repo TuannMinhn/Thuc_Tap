@@ -12,22 +12,18 @@ export const useBuilder = () => {
 };
 
 export const BuilderProvider = ({ children }) => {
-    const [config, setConfig] = useState(initialConfig);
+    const [config, setConfig] = useState(() => {
+        try {
+            const savedConfig = localStorage.getItem('landingPageConfig');
+            return savedConfig ? JSON.parse(savedConfig) : initialConfig;
+        } catch (e) {
+            console.error("Failed to load config", e);
+            return initialConfig;
+        }
+    });
     const [isEditing, setIsEditing] = useState(false);
     const [selectedComponent, setSelectedComponent] = useState(null); // For detailed edit modal
     const [activeSectionId, setActiveSectionId] = useState(null); // For Section Settings Modal
-
-    // Load from LocalStorage on mount (optional, for persistence)
-    useEffect(() => {
-        const savedConfig = localStorage.getItem('landingPageConfig');
-        if (savedConfig) {
-            try {
-                setConfig(JSON.parse(savedConfig));
-            } catch (e) {
-                console.error("Failed to load config", e);
-            }
-        }
-    }, []);
 
     // Save to LocalStorage whenever config changes
     useEffect(() => {
