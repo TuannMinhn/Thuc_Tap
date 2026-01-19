@@ -44,10 +44,27 @@ const RichText = ({ data, isEditing }) => {
 
         return (
             <div className={`prose max-w-none ${alignmentClass} group`}>
-                {title && <h2 className={`text-gray-800 ${getClasses(titleStyle, 'h2')} ${link ? 'group-hover:text-blue-600 transition-colors' : ''}`}>{title}</h2>}
-                {subtitle && <h3 className={`text-blue-600 ${getClasses(subtitleStyle, 'h3')}`}>{subtitle}</h3>}
+                {title && (
+                    <h2
+                        className={`text-gray-800 ${getClasses(titleStyle, 'h2')} ${link ? 'group-hover:text-blue-600 transition-colors' : ''}`}
+                        style={{ color: titleStyle.color }}
+                    >
+                        {title}
+                    </h2>
+                )}
+                {subtitle && (
+                    <h3
+                        className={`text-blue-600 ${getClasses(subtitleStyle, 'h3')}`}
+                        style={{ color: subtitleStyle.color }}
+                    >
+                        {subtitle}
+                    </h3>
+                )}
                 {content && (
-                    <div className={`whitespace-pre-line ${getClasses(contentStyle, 'body')}`}>
+                    <div
+                        className={`whitespace-pre-line ${getClasses(contentStyle, 'body')}`}
+                        style={{ color: contentStyle.color }}
+                    >
                         {content}
                     </div>
                 )}

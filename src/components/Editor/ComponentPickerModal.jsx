@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Type, Image, X, Video, Hash, Clock, HelpCircle, ListOrdered, Award, ChevronDown, ChevronUp, LayoutTemplate } from 'lucide-react';
+import { Type, Image, X, Video, Hash, Clock, HelpCircle, ListOrdered, Award, ChevronDown, ChevronUp, LayoutTemplate, MousePointerClick } from 'lucide-react';
 import useLockBodyScroll from '../../hooks/useLockBodyScroll';
 
 const COMPONENT_TYPES = [
@@ -318,6 +318,31 @@ const COMPONENT_TYPES = [
                         { title: 'Giải Triển vọng', subtitle: 'Dành cho nhân tố mới', icon: 'award' }
                     ]
                 }
+            }
+        ]
+    },
+    {
+        type: 'CTA',
+        label: 'CTA / Button Block',
+        icon: MousePointerClick,
+        description: 'Nút bấm kêu gọi hành động',
+        color: 'bg-green-50 text-green-600',
+        defaultData: { label: 'Click Me', link: '#', style: 'primary', size: 'medium', align: 'center' },
+        presets: [
+            {
+                label: 'Đăng ký ngay',
+                description: 'Nút nổi bật (Màu chủ đạo), kích thước lớn.',
+                data: { label: 'Đăng Ký Ngay', link: '#register', style: 'primary', size: 'large', align: 'center', icon: true }
+            },
+            {
+                label: 'Khám phá',
+                description: 'Nút màu tối (Secondary), trang trọng.',
+                data: { label: 'Khám Phá Ngay', link: '#explore', style: 'secondary', size: 'medium', align: 'center', icon: true }
+            },
+            {
+                label: 'Tìm hiểu thêm',
+                description: 'Nút viền (Outline), tinh tế.',
+                data: { label: 'Tìm Hiểu Thêm', link: '#learn-more', style: 'outline', size: 'medium', align: 'center' }
             }
         ]
     }

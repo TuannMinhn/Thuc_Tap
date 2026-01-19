@@ -627,6 +627,19 @@ const PropertyModal = () => {
                                         >
                                             U
                                         </button>
+
+                                        <div className="h-4 w-[1px] bg-gray-300 mx-1"></div>
+
+                                        {/* Color Picker */}
+                                        <div className="relative group/color">
+                                            <input
+                                                type="color"
+                                                value={currentStyle.color || '#000000'}
+                                                onChange={(e) => updateStyle('color', e.target.value)}
+                                                className="w-6 h-6 p-0 border-none rounded overflow-hidden cursor-pointer"
+                                                title="Màu chữ"
+                                            />
+                                        </div>
                                     </div>
                                 );
                             };
@@ -1231,6 +1244,120 @@ const PropertyModal = () => {
                                             className="w-full p-2 border rounded-md"
                                             placeholder="https://..."
                                         />
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        // CTA Editor
+                        if (selectedComponent.type === 'CTA') {
+                            return (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Nhãn nút (Label)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.label || ''}
+                                                onChange={(e) => handleChange('label', e.target.value)}
+                                                className="w-full p-2 border rounded-md font-bold"
+                                                placeholder="VD: Đăng ký ngay"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Đường dẫn (Link)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.link || ''}
+                                                onChange={(e) => handleChange('link', e.target.value)}
+                                                className="w-full p-2 border rounded-md"
+                                                placeholder="https://..."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Kiểu dáng</label>
+                                            <select
+                                                value={formData.style || 'primary'}
+                                                onChange={(e) => handleChange('style', e.target.value)}
+                                                className="w-full p-2 border rounded-md"
+                                            >
+                                                <option value="primary">Primary (Blue)</option>
+                                                <option value="secondary">Secondary (Dark)</option>
+                                                <option value="outline">Outline (Viền)</option>
+                                                <option value="ghost">Ghost (Trong suốt)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Kích thước</label>
+                                            <select
+                                                value={formData.size || 'medium'}
+                                                onChange={(e) => handleChange('size', e.target.value)}
+                                                className="w-full p-2 border rounded-md"
+                                            >
+                                                <option value="small">Nhỏ</option>
+                                                <option value="medium">Vừa</option>
+                                                <option value="large">Lớn</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Vị trí (Align)</label>
+                                            <div className="flex bg-gray-100 p-1 rounded-lg gap-1 border border-gray-200">
+                                                {['left', 'center', 'right'].map(align => (
+                                                    <button
+                                                        key={align}
+                                                        onClick={() => handleChange('align', align)}
+                                                        className={`flex-1 p-2 rounded flex items-center justify-center ${formData.align === align ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:bg-gray-200'}`}
+                                                    >
+                                                        {align === 'left' && <AlignLeft size={18} />}
+                                                        {align === 'center' && <AlignCenter size={18} />}
+                                                        {align === 'right' && <AlignRight size={18} />}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4">
+                                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.fullWidth || false}
+                                                onChange={(e) => handleChange('fullWidth', e.target.checked)}
+                                                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <span className="text-sm font-medium text-gray-700">Full Width (Rộng hết cỡ)</span>
+                                        </label>
+
+                                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.icon || false}
+                                                onChange={(e) => handleChange('icon', e.target.checked)}
+                                                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                            />
+                                            <span className="text-sm font-medium text-gray-700">Hiện Icon mũi tên</span>
+                                        </label>
+                                    </div>
+
+                                    {/* Preview */}
+                                    <div className="bg-gray-50 p-6 rounded-lg border border-dashed border-gray-300 flex items-center justify-center">
+                                        <button className={`
+                                            font-bold transition-all duration-300 rounded-lg transform active:scale-95 flex items-center justify-center
+                                            ${formData.size === 'small' ? 'px-4 py-2 text-sm' : ''}
+                                            ${formData.size === 'medium' ? 'px-6 py-3 text-base' : ''}
+                                            ${formData.size === 'large' ? 'px-10 py-4 text-lg shadow-lg' : ''}
+                                            ${formData.style === 'primary' ? 'bg-blue-600 text-white border-2 border-transparent' : ''}
+                                            ${formData.style === 'secondary' ? 'bg-slate-900 text-white border-2 border-transparent' : ''}
+                                            ${formData.style === 'outline' ? 'bg-transparent text-blue-600 border-2 border-blue-600' : ''}
+                                            ${formData.style === 'ghost' ? 'bg-transparent text-slate-600 border-2 border-transparent' : ''}
+                                            ${formData.fullWidth ? 'w-full' : ''}
+                                        `}>
+                                            {formData.label || 'Button'}
+                                            {formData.icon && <span className="ml-2">→</span>}
+                                        </button>
                                     </div>
                                 </div>
                             );

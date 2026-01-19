@@ -7,6 +7,7 @@ import Timeline from '../Content/Timeline';
 import FAQ from '../Content/FAQ';
 import Steps from '../Content/Steps';
 import Prize from '../Content/Prize';
+import CTA from '../Content/CTA';
 import { useBuilder } from '../../context/BuilderContext';
 import SectionControls from '../Editor/SectionControls';
 import SectionCarousel from './SectionCarousel';
@@ -25,6 +26,7 @@ const COMPONENT_MAP = {
     'FAQ': FAQ,
     'Steps': Steps,
     'Prize': Prize,
+    'CTA': CTA,
 };
 
 const PageBuilder = ({ sections: propSections }) => {
@@ -228,7 +230,7 @@ const PageBuilder = ({ sections: propSections }) => {
                                                                 id={component.id}
                                                                 isEditing={isEditing}
                                                                 onClick={(e) => handleComponentClick(e, section.id, colIndex, compIndex, component)}
-                                                                className={`relative group/comp ${isEditing ? 'cursor-pointer hover:ring-2 hover:ring-blue-500 rounded p-1 transition-all' : ''}`}
+                                                                className={`relative group/comp w-full ${isEditing ? 'cursor-pointer hover:ring-2 hover:ring-blue-500 rounded p-1 transition-all' : ''}`}
                                                             >
                                                                 <ComponentToRender data={component.data} isEditing={isEditing} />
                                                                 {isEditing && (
@@ -276,7 +278,7 @@ const PageBuilder = ({ sections: propSections }) => {
 
                                     return (
                                         <div
-                                            className={`grid gap-6 ${section.layout === '2-col' ? 'items-center' : ''}`}
+                                            className="grid gap-6"
                                             style={{
                                                 gridTemplateColumns: `repeat(${parseInt(section.layout) || 1}, minmax(0, 1fr))`
                                             }}

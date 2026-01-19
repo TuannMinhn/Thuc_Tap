@@ -156,18 +156,87 @@ const SectionSettingsModal = () => {
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Số lượng cột ({formData.columns.length})</label>
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="6"
-                                    value={formData.columns.length}
-                                    onChange={(e) => updateColumns(e.target.value)}
-                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                                />
-                                <div className="flex justify-between text-xs text-gray-400 mt-1">
-                                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
-                                </div>
+                                {!formData.enableCarousel ? (
+                                    <>
+                                        <input
+                                            type="range"
+                                            min="1"
+                                            max="6"
+                                            value={formData.columns.length}
+                                            onChange={(e) => updateColumns(e.target.value)}
+                                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                        />
+                                        <div className="flex justify-between text-xs text-gray-400 mt-1">
+                                            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-sm font-medium text-blue-800">Slides hiện có: {formData.columns.length}</span>
+                                            <button
+                                                onClick={() => updateColumns(formData.columns.length + 1)}
+                                                className="flex items-center gap-1 text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
+                                            >
+                                                <Plus size={14} /> Thêm Slide
+                                            </button>
+                                        </div>
+                                        <p className="text-xs text-blue-600">
+                                            Trong chế độ Carousel, mỗi cột sẽ là một Slide riêng biệt.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Carousel Toggle */}
+                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div className="flex items-center gap-2">
+                                    <GalleryHorizontal size={20} className="text-gray-500" />
+                                    <div>
+                                        <span className="block text-sm font-medium text-gray-700">Chế độ Carousel</span>
+                                        <span className="block text-xs text-gray-500">Hiển thị nội dung dạng trượt ngang</span>
+                                    </div>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={formData.enableCarousel || false}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, enableCarousel: e.target.checked }))}
+                                    />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+
+                            {/* Carousel Settings */}
+                            {formData.enableCarousel && (
+                                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 animate-in fade-in slide-in-from-top-2">
+                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Cấu hình Carousel</label>
+                                    <div>
+                                        <label className="block text-sm text-gray-700 mb-1">Số lượng hiển thị (Slides Per View)</label>
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="range"
+                                                min="1"
+                                                max="6"
+                                                step="0.5"
+                                                value={formData.carouselSettings?.slidesPerView || 3}
+                                                onChange={(e) => setFormData(prev => ({
+                                                    ...prev,
+                                                    carouselSettings: {
+                                                        ...prev.carouselSettings,
+                                                        slidesPerView: parseFloat(e.target.value)
+                                                    }
+                                                }))}
+                                                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                            />
+                                            <span className="text-sm font-bold text-blue-600 w-8 text-center">
+                                                {formData.carouselSettings?.slidesPerView || 3}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <div>
                                 <div>
@@ -231,46 +300,7 @@ const SectionSettingsModal = () => {
                             </div>
                         </div>
 
-                        {/* Carousel Toggle */}
-                        <div className="pt-3 border-t border-gray-100">
-                            <label className="flex items-center justify-between cursor-pointer group p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                                <div>
-                                    <div className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                        <GalleryHorizontal size={16} className="text-blue-500" />
-                                        Chế độ Carousel (Slide)
-                                    </div>
-                                    <div className="text-xs text-gray-400 mt-0.5">Biến các cột thành slide trượt ngang</div>
-                                </div>
-                                <div className="relative">
-                                    <input
-                                        type="checkbox"
-                                        className="sr-only peer"
-                                        checked={formData.enableCarousel || false}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, enableCarousel: e.target.checked }))}
-                                    />
-                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                </div>
-                            </label>
 
-                            {formData.enableCarousel && (
-                                <div className="mt-3 pl-2 border-l-2 border-blue-100 animate-in fade-in slide-in-from-top-1">
-                                    <label className="block text-xs font-medium text-gray-600 mb-2">Số lượng hiển thị (Desktop)</label>
-                                    <select
-                                        value={formData.carouselSettings?.slidesPerView || 3}
-                                        onChange={(e) => setFormData(prev => ({
-                                            ...prev,
-                                            carouselSettings: { ...prev.carouselSettings, slidesPerView: parseFloat(e.target.value) }
-                                        }))}
-                                        className="w-full p-2 text-sm border rounded bg-white"
-                                    >
-                                        <option value="1">1 Slide / Khung hình</option>
-                                        <option value="2">2 Slides / Khung hình</option>
-                                        <option value="3">3 Slides / Khung hình</option>
-                                        <option value="4">4 Slides / Khung hình</option>
-                                    </select>
-                                </div>
-                            )}
-                        </div>
                     </section>
 
                     <hr className="border-gray-100" />

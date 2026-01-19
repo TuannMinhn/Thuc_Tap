@@ -15,7 +15,7 @@ const Media = ({ data, isEditing }) => {
     const isGif = src?.toLowerCase()?.includes('.gif') || src?.includes('data:image/gif');
 
     const Content = () => (
-        <div className={`relative w-full ${aspectRatio} overflow-hidden group ${fullWidth ? 'rounded-none shadow-none' : 'rounded-lg shadow-sm bg-gray-100'}`}>
+        <div className={`relative w-full ${fullWidth ? 'h-full' : aspectRatio} overflow-hidden group ${fullWidth ? 'rounded-none shadow-none' : 'rounded-lg shadow-sm bg-gray-100'}`}>
             {type === 'video' && !isGif ? (
                 youtubeId ? (
                     <iframe
@@ -54,9 +54,9 @@ const Media = ({ data, isEditing }) => {
     );
 
     return (
-        <div className="w-full">
+        <div className={`w-full ${fullWidth ? 'h-full' : ''}`}>
             {link ? (
-                <a href={link} target="_blank" rel="noopener noreferrer" className="block w-full">
+                <a href={link} target="_blank" rel="noopener noreferrer" className={`block w-full ${fullWidth ? 'h-full' : ''}`}>
                     <Content />
                 </a>
             ) : (
