@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Media = ({ data, isEditing }) => {
-    const { type, src, alt, caption, aspectRatio = 'aspect-video', link, fullWidth } = data;
+    const { type, src, alt, caption, aspectRatio = 'aspect-video', link, fullWidth, autoPlay, muted, loop, controls = true } = data;
 
     const getYoutubeEmbed = (url) => {
         if (!url) return null;
@@ -12,14 +12,15 @@ const Media = ({ data, isEditing }) => {
     };
 
     const youtubeId = type === 'video' ? getYoutubeEmbed(src) : null;
+    const isGif = src?.toLowerCase()?.includes('.gif') || src?.includes('data:image/gif');
 
     const Content = () => (
         <div className={`relative w-full ${aspectRatio} overflow-hidden group ${fullWidth ? 'rounded-none shadow-none' : 'rounded-lg shadow-sm bg-gray-100'}`}>
-            {type === 'video' ? (
+            {type === 'video' && !isGif ? (
                 youtubeId ? (
                     <iframe
                         className="w-full h-full"
-                        src={`https://www.youtube.com/embed/${youtubeId}`}
+                        src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${autoPlay ? 1 : 0}&mute=${muted ? 1 : 0}&loop=${loop ? 1 : 0}&playlist=${youtubeId}&controls=${controls ? 1 : 0}`}
                         title={alt || 'YouTube video player'}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -27,7 +28,11 @@ const Media = ({ data, isEditing }) => {
                 ) : (
                     <video
                         src={src}
-                        controls
+                        controls={controls}
+                        autoPlay={autoPlay}
+                        muted={muted}
+                        loop={loop}
+                        playsInline
                         className="w-full h-full object-cover"
                     >
                         Your browser does not support the video tag.

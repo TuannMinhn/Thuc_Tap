@@ -15,6 +15,8 @@ const PropertyModal = () => {
         useSensor(KeyboardSensor)
     );
 
+    const fileInputRef = React.useRef(null);
+
     useLockBodyScroll(!!selectedComponent);
 
     useEffect(() => {
@@ -99,6 +101,18 @@ const PropertyModal = () => {
                     menuItems: arrayMove(prev.menuItems, oldIndex, newIndex),
                 };
             });
+        }
+    };
+
+    // File Upload Handler (Moved to top level)
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                handleChange('src', reader.result);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -833,40 +847,83 @@ const PropertyModal = () => {
                         // Timeline Editor
                         if (selectedComponent.type === 'Timeline') {
                             const items = formData.items || [];
+                            const templateItem = items.length > 0 ? items[0] : { date: '2024', title: 'Tiêu đề', description: 'Mô tả' };
+
+                            // Define field mappings for UI
+                            const FIELD_CONFIG = {
+                                year: { label: 'Năm', placeholder: '2024', width: 'w-1/4' },
+                                step: { label: 'Bước', placeholder: 'Bước 1', width: 'w-1/4' },
+                                phase: { label: 'Giai đoạn', placeholder: 'Giai đoạn 1', width: 'w-1/3' },
+                                date: { label: 'Thời gian', placeholder: 'dd/mm/yyyy', width: 'w-1/4' },
+
+                                title: { label: 'Tiêu đề', placeholder: 'Tiêu đề chính...', width: 'flex-1' },
+                                action: { label: 'Hành động', placeholder: 'Hành động...', width: 'flex-1' },
+
+                                description: { label: 'Mô tả', placeholder: 'Mô tả chi tiết...', type: 'textarea' },
+                                goal: { label: 'Mục tiêu / Kết quả', placeholder: 'Mục tiêu cần đạt...', type: 'textarea' },
+                                status: { label: 'Trạng thái / Kết quả', placeholder: 'Trạng thái hiện tại...', type: 'textarea' }
+                            };
+
                             const handleTimelineChange = (index, field, value) => {
                                 const newItems = [...items];
                                 newItems[index] = { ...newItems[index], [field]: value };
                                 handleChange('items', newItems);
                             };
 
+                            // Determine active fields based on template item
+                            const activeFields = Object.keys(templateItem).filter(key => FIELD_CONFIG[key]);
+
                             return (
                                 <div className="space-y-4">
                                     <h4 className="font-semibold text-gray-700">Sự kiện (Timeline Items)</h4>
+                                    <div className="bg-blue-50 p-2 rounded text-xs text-blue-700 mb-2">
+                                        * Form tự động điều chỉnh theo mẫu bạn chọn (Năm, Bước, hoặc Giai đoạn).
+                                    </div>
+
                                     {items.map((item, index) => (
                                         <div key={index} className="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
+                                            {/* Top Row: Badge + Title */}
                                             <div className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={item.date}
-                                                    onChange={(e) => handleTimelineChange(index, 'date', e.target.value)}
-                                                    className="w-1/4 p-2 border rounded font-bold"
-                                                    placeholder="Năm/Ngày"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={item.title}
-                                                    onChange={(e) => handleTimelineChange(index, 'title', e.target.value)}
-                                                    className="flex-1 p-2 border rounded font-medium"
-                                                    placeholder="Tiêu đề sự kiện"
-                                                />
+                                                {activeFields.filter(k => ['year', 'step', 'phase', 'date'].includes(k)).map(key => (
+                                                    <div key={key} className={FIELD_CONFIG[key].width}>
+                                                        <input
+                                                            type="text"
+                                                            value={item[key] || ''}
+                                                            onChange={(e) => handleTimelineChange(index, key, e.target.value)}
+                                                            className="w-full p-2 border rounded font-bold"
+                                                            placeholder={FIELD_CONFIG[key].placeholder}
+                                                            title={FIELD_CONFIG[key].label}
+                                                        />
+                                                    </div>
+                                                ))}
+
+                                                {activeFields.filter(k => ['title', 'action'].includes(k)).map(key => (
+                                                    <div key={key} className={FIELD_CONFIG[key].width}>
+                                                        <input
+                                                            type="text"
+                                                            value={item[key] || ''}
+                                                            onChange={(e) => handleTimelineChange(index, key, e.target.value)}
+                                                            className="w-full p-2 border rounded font-bold"
+                                                            placeholder={FIELD_CONFIG[key].placeholder}
+                                                            title={FIELD_CONFIG[key].label}
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <textarea
-                                                value={item.description}
-                                                onChange={(e) => handleTimelineChange(index, 'description', e.target.value)}
-                                                className="w-full p-2 border rounded text-sm"
-                                                placeholder="Mô tả chi tiết..."
-                                                rows={2}
-                                            />
+
+                                            {/* Bottom Row: Description */}
+                                            {activeFields.filter(k => ['description', 'goal', 'status'].includes(k)).map(key => (
+                                                <textarea
+                                                    key={key}
+                                                    value={item[key] || ''}
+                                                    onChange={(e) => handleTimelineChange(index, key, e.target.value)}
+                                                    className="w-full p-2 border rounded text-sm"
+                                                    placeholder={FIELD_CONFIG[key].placeholder}
+                                                    rows={2}
+                                                    title={FIELD_CONFIG[key].label}
+                                                />
+                                            ))}
+
                                             <button
                                                 onClick={() => {
                                                     const newItems = items.filter((_, i) => i !== index);
@@ -879,7 +936,16 @@ const PropertyModal = () => {
                                         </div>
                                     ))}
                                     <button
-                                        onClick={() => handleChange('items', [...items, { date: 'New', title: 'Event', description: '...' }])}
+                                        onClick={() => {
+                                            // Clone structure from first item but clear values
+                                            const newItem = {};
+                                            activeFields.forEach(k => newItem[k] = '');
+                                            // Set default values for badge
+                                            if (newItem.year !== undefined) newItem.year = '202X';
+                                            if (newItem.step !== undefined) newItem.step = `Bước ${items.length + 1}`;
+
+                                            handleChange('items', [...items, newItem]);
+                                        }}
                                         className="w-full py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium flex items-center justify-center gap-2"
                                     >
                                         <Plus size={16} /> Thêm sự kiện
@@ -1088,8 +1154,22 @@ const PropertyModal = () => {
                                                 className="w-full p-2 border rounded-md"
                                                 placeholder="https://..."
                                             />
-                                            <button className="p-2 bg-gray-100 rounded hover:bg-gray-200" title="Tải ảnh lên (Demo)"><Upload size={18} /></button>
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handleFileUpload}
+                                                className="hidden"
+                                                accept="image/*,video/*"
+                                            />
+                                            <button
+                                                onClick={() => fileInputRef.current.click()}
+                                                className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                                                title="Tải ảnh/video từ máy"
+                                            >
+                                                <Upload size={18} />
+                                            </button>
                                         </div>
+                                        <p className="text-xs text-gray-400 mt-1">* Hỗ trợ link online hoặc tải file từ máy (Tự động chuyển thành Base64).</p>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">

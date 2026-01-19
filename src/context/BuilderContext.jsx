@@ -14,7 +14,9 @@ export const useBuilder = () => {
 export const BuilderProvider = ({ children }) => {
     const [config, setConfig] = useState(() => {
         try {
-            const savedConfig = localStorage.getItem('landingPageConfig');
+            // Determine which draft to load
+            const activeDraftId = localStorage.getItem('activeDraftId') || 'draft_cntt';
+            const savedConfig = localStorage.getItem(activeDraftId);
             return savedConfig ? JSON.parse(savedConfig) : initialConfig;
         } catch (e) {
             console.error("Failed to load config", e);
@@ -27,7 +29,8 @@ export const BuilderProvider = ({ children }) => {
 
     // Save to LocalStorage whenever config changes
     useEffect(() => {
-        localStorage.setItem('landingPageConfig', JSON.stringify(config));
+        const activeDraftId = localStorage.getItem('activeDraftId') || 'draft_cntt';
+        localStorage.setItem(activeDraftId, JSON.stringify(config));
     }, [config]);
 
     const updateHeader = (newHeader) => {

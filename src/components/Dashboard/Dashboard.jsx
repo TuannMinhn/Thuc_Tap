@@ -1,56 +1,128 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBuilder } from '../../context/BuilderContext';
 import { landingPageConfig as sampleConfig } from '../../data/landingPageConfig';
 import { Plus, LayoutTemplate, File, ArrowRight } from 'lucide-react';
+import ConfirmationModal from '../Editor/ConfirmationModal';
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const { setConfig } = useBuilder();
 
+    const [showResumeModal, setShowResumeModal] = useState(false);
+    const [pendingTemplate, setPendingTemplate] = useState(null); // 'draft_blank' or 'draft_cntt'
+
+    const checkAndProceed = (draftId, actionIfNoSave) => {
+        const savedConfig = localStorage.getItem(draftId);
+        if (savedConfig) {
+            setPendingTemplate(draftId);
+            setShowResumeModal(true);
+        } else {
+            // No save for this specific template type -> Start fresh
+            localStorage.setItem('activeDraftId', draftId);
+            actionIfNoSave();
+        }
+    };
+
     const handleCreateBlank = () => {
-        const blankConfig = {
-            header: {
-                title: "Trang Mới",
-                logo: "",
-                backgroundColor: "bg-white",
-                textColor: "text-slate-900",
-                menuItems: []
-            },
-            footer: {
-                showFooter: true,
-                backgroundColor: "bg-slate-900",
-                textColor: "text-white",
-                copyrightText: "© 2024 My Website",
-                columns: []
-            },
-            sections: [
-                {
-                    id: "hero-1",
-                    layout: "1-col",
-                    style: { backgroundColor: "bg-white", padding: "py-24" },
-                    columns: [{ components: [{ type: "RichText", data: { title: "Tiêu đề trang", content: "Nội dung giới thiệu..." } }] }]
-                }
-            ]
-        };
-        setConfig(blankConfig);
-        navigate('/editor');
+        checkAndProceed('draft_blank', () => {
+            const blankConfig = {
+                header: {
+                    title: "Trang Mới",
+                    logo: "",
+                    backgroundColor: "bg-white",
+                    textColor: "text-slate-900",
+                    menuItems: []
+                },
+                footer: {
+                    showFooter: true,
+                    backgroundColor: "bg-slate-900",
+                    textColor: "text-white",
+                    copyrightText: "© 2024 My Website",
+                    columns: []
+                },
+                sections: [
+                    {
+                        id: "hero-1",
+                        layout: "1-col",
+                        style: { backgroundColor: "bg-white", padding: "py-24" },
+                        columns: [{ components: [{ type: "RichText", data: { title: "Tiêu đề trang", content: "Nội dung giới thiệu..." } }] }]
+                    }
+                ]
+            };
+            setConfig(blankConfig);
+            // We set the config in context (memory), but we must also ensure next reload loads from 'draft_blank'
+            // checkAndProceed already sets 'activeDraftId'.
+            navigate('/editor');
+        });
     };
 
     const handleUseSample = () => {
-        const savedConfig = localStorage.getItem('landingPageConfig');
-        if (savedConfig) {
-            const shouldResume = window.confirm("Bạn có muốn tiếp tục chỉnh sửa bản lưu trước đó không?\nNhấn OK để tiếp tục, Cancel để tải lại mẫu gốc (sẽ mất thay đổi cũ).");
-            if (shouldResume) {
-                // Config already loaded in context from localStorage, so just navigate
-                navigate('/editor');
-                return;
+        checkAndProceed('draft_cntt', () => {
+            setConfig(sampleConfig);
+            navigate('/editor');
+        });
+    };
+
+    const handleResume = () => {
+        // Just set the active ID so context loads it
+        if (pendingTemplate) {
+            localStorage.setItem('activeDraftId', pendingTemplate);
+            // We also need to reload context? No, context mounts on Editor.
+            // But if we are navigating, the new Page loads Context. 
+            // WAIT. Context is likely at App level. 
+            // If Context is at App level, it WON'T reload unless we force it or update it.
+            // But we have setConfig from useBuilder.
+
+            // If we are "Resuming", we need to load the data from localStorage into the Context NOW.
+            const savedData = localStorage.getItem(pendingTemplate);
+            if (savedData) {
+                setConfig(JSON.parse(savedData));
             }
         }
-
-        // If no save or user chose to reset
-        setConfig(sampleConfig);
         navigate('/editor');
+        setShowResumeModal(false);
+    };
+
+    const handleStartNew = () => {
+        // User chose to discard old save and start fresh with selected template
+        if (pendingTemplate) {
+            localStorage.removeItem(pendingTemplate);
+            localStorage.setItem('activeDraftId', pendingTemplate);
+        }
+
+        if (pendingTemplate === 'draft_blank') {
+            const blankConfig = {
+                header: {
+                    title: "Trang Mới",
+                    logo: "",
+                    backgroundColor: "bg-white",
+                    textColor: "text-slate-900",
+                    menuItems: []
+                },
+                footer: {
+                    showFooter: true,
+                    backgroundColor: "bg-slate-900",
+                    textColor: "text-white",
+                    copyrightText: "© 2024 My Website",
+                    columns: []
+                },
+                sections: [
+                    {
+                        id: "hero-1",
+                        layout: "1-col",
+                        style: { backgroundColor: "bg-white", padding: "py-24" },
+                        columns: [{ components: [{ type: "RichText", data: { title: "Tiêu đề trang", content: "Nội dung giới thiệu..." } }] }]
+                    }
+                ]
+            };
+            setConfig(blankConfig);
+        } else {
+            setConfig(sampleConfig);
+        }
+
+        navigate('/editor');
+        setShowResumeModal(false);
     };
 
     return (
@@ -110,7 +182,22 @@ const Dashboard = () => {
                     </div>
                 </div>
             </main>
-        </div>
+
+            <ConfirmationModal
+                isOpen={showResumeModal}
+                onClose={() => setShowResumeModal(false)}
+                onConfirm={handleResume}
+                onCancel={handleStartNew}
+                title="Khôi phục dữ liệu cũ?"
+                message={`Hệ thống phát hiện bạn đang làm dở một trang từ trước.
+                
+                - Bấm "Tiếp tục" để sửa tiếp trang đó.
+                - Bấm "Tạo Mới" để xóa bản cũ và bắt đầu mẫu ${pendingTemplate === 'blank' ? '"Trang Trắng"' : '"Khoa CNTT"'} mới tinh.`}
+                confirmLabel="Tiếp tục làm bản cũ"
+                cancelLabel={`Tạo Mới (${pendingTemplate === 'blank' ? 'Trang Trắng' : 'Khoa CNTT'})`}
+                variant="primary"
+            />
+        </div >
     );
 };
 

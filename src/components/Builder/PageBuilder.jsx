@@ -67,7 +67,18 @@ const PageBuilder = ({ sections: propSections }) => {
     };
 
     if (!sections || sections.length === 0) {
-        return <div className="p-16 text-center text-gray-500 border-2 border-dashed border-gray-300 rounded-lg m-4">Chưa có nội dung. Nhấn nút "+" ở góc để bắt đầu.</div>;
+        return (
+            <div className="flex flex-col items-center justify-center p-16 text-center border-2 border-dashed border-gray-300 rounded-lg m-4 min-h-[300px] bg-gray-50">
+                <p className="text-gray-500 mb-4">Chưa có nội dung. Tạo Section đầu tiên để bắt đầu.</p>
+                <button
+                    onClick={() => actions.addSection(0)}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold shadow-lg transition-all transform hover:scale-105"
+                >
+                    <PlusCircle size={20} />
+                    Tạo Section Mới
+                </button>
+            </div>
+        );
     }
 
     const handleComponentClick = (e, sectionId, colIndex, compIndex, component) => {

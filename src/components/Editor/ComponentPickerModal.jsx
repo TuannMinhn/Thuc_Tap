@@ -15,51 +15,42 @@ const COMPONENT_TYPES = [
         },
         presets: [
             {
-                label: 'Section Title',
+                label: 'Tiêu Đề Mục',
                 description: 'Dùng để ngăn cách các phần nội dung lớn.',
                 data: {
-                    title: '',
-                    content: '',
-                    align: 'left',
-                    instruction: 'Dùng để ngăn cách các phần nội dung lớn. Hãy nhập tiêu đề chính vào đây.'
+                    title: 'Ví dụ: Tính năng chính',
+                    // align default is left, but we can omit if component handles it. Keeping it clean.
                 }
             },
             {
-                label: 'Title + Description',
+                label: 'Tiêu Đề + Mô Tả',
                 description: 'Cấu trúc tiêu chuẩn với tiêu đề và đoạn văn mô tả chi tiết.',
                 data: {
-                    title: '',
-                    content: '',
-                    instruction: 'Cấu trúc tiêu chuẩn: Nhập tiêu đề và đoạn văn mô tả chi tiết phía dưới.'
+                    title: 'Theo dõi tiến độ học tập',
+                    content: 'Quản lý tiến độ môn học và lớp học theo thời gian thực',
                 }
             },
             {
-                label: 'Title + Subtitle',
+                label: 'Tiêu Đề + Phụ Đề',
                 description: 'Nhấn mạnh tiêu đề chính kèm dòng phụ chú nhỏ.',
                 data: {
-                    title: '',
-                    subtitle: '',
-                    content: '',
-                    instruction: 'Nhấn mạnh tiêu đề chính kèm dòng phụ chú nhỏ (Subtitle) để làm rõ ý nghĩa.'
+                    title: 'Quản lý tiến độ học tập thông minh',
+                    subtitle: 'Mọi dữ liệu học tập trên một dashboard duy nhất',
                 }
             },
             {
-                label: 'Centered Intro',
+                label: 'Giới Thiệu Căn Giữa',
                 description: 'Thu hút sự chú ý, tối ưu cho lời chào hoặc thông điệp chính.',
                 data: {
-                    title: '',
-                    content: '',
-                    align: 'center',
-                    instruction: 'Thu hút sự chú ý. Tối ưu cho lời chào hoặc thông điệp chính của trang.'
+                    content: 'Nền tảng giúp nhà trường theo dõi và cải thiện tiến độ học tập.',
+                    align: 'text-center' // Must force center alignment here
                 }
             },
             {
-                label: 'Paragraph Only',
+                label: 'Đoạn Văn Đơn',
                 description: 'Đoạn văn đơn thuần, thích hợp cho ghi chú hoặc footer.',
                 data: {
-                    title: '',
-                    content: '',
-                    instruction: 'Đoạn văn đơn thuần. Thích hợp cho các ghi chú, mô tả bổ sung hoặc chân trang.'
+                    content: 'Hệ thống tự động tổng hợp dữ liệu và hiển thị trực quan.'
                 }
             }
         ]
@@ -79,7 +70,7 @@ const COMPONENT_TYPES = [
         },
         presets: [
             {
-                label: 'Highlight Metrics (1)',
+                label: 'Số Liệu Nổi Bật (1)',
                 description: 'Tập trung vào một con số ấn tượng nhất.',
                 data: {
                     items: [
@@ -88,30 +79,19 @@ const COMPONENT_TYPES = [
                 }
             },
             {
-                label: '3 Metrics – Horizontal',
-                description: 'Bố cục 3 cột cân đối.',
-                data: {
-                    items: [
-                        { value: '500+', label: 'Dự án' },
-                        { value: '98%', label: 'Hài lòng' },
-                        { value: '10 Năm', label: 'Kinh nghiệm' }
-                    ]
-                }
-            },
-            {
-                label: '4 Metrics – Grid',
-                description: 'Lưới 4 chủ đề cho desktop.',
+                label: 'Thống Kê Cơ Bản',
+                description: 'Hiển thị các con số thống kê dạng lưới tự động (3-4 cột).',
                 data: {
                     items: [
                         { value: '10K', label: 'Học viên' },
                         { value: '50+', label: 'Khóa học' },
-                        { value: '30+', label: 'Giảng viên' },
-                        { value: '100%', label: 'Cam kết' }
+                        { value: '98%', label: 'Hài lòng' },
+                        { value: '30+', label: 'Giảng viên' }
                     ]
                 }
             },
             {
-                label: 'Stats with Description',
+                label: 'Số Liệu + Mô Tả',
                 description: 'Số liệu kèm mô tả chi tiết.',
                 data: {
                     items: [
@@ -130,8 +110,39 @@ const COMPONENT_TYPES = [
         color: 'bg-purple-50 text-purple-600',
         defaultData: { src: '', alt: 'Image', aspectRatio: 'aspect-video', caption: 'Mô tả ngắn về hình ảnh nếu cần' },
         presets: [
-            { label: 'Full Width', data: { src: '', alt: 'Banner', aspectRatio: 'aspect-video', fullWidth: true, caption: '' } },
-            { label: 'Banner Hero', data: { src: '', alt: 'Hero', aspectRatio: 'aspect-[21/9]', caption: 'Chào mừng đến với website' } },
+            {
+                label: 'Ảnh Tràn Viền',
+                description: 'Ảnh rộng hết màn hình, không có chú thích.',
+                data: {
+                    src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200',
+                    alt: 'Banner',
+                    aspectRatio: 'aspect-video',
+                    fullWidth: true
+                    // No caption
+                }
+            },
+            {
+                label: 'Ảnh Bìa (Hero)',
+                description: 'Ảnh khổ rộng (21:9) làm điểm nhấn đầu trang.',
+                data: {
+                    src: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=1200',
+                    alt: 'Hero',
+                    aspectRatio: 'aspect-[21/9]',
+                    fullWidth: true
+                    // No caption
+                }
+            }, // Added standard option for completeness if user wants caption
+            {
+                label: 'Ảnh Minh Họa',
+                description: 'Ảnh trong khung tiêu chuẩn kèm chú thích.',
+                data: {
+                    src: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800',
+                    alt: 'Minh họa',
+                    aspectRatio: 'aspect-video',
+                    fullWidth: false,
+                    caption: 'Mô tả chi tiết cho hình ảnh minh họa.'
+                }
+            },
         ]
     },
     {
@@ -142,7 +153,25 @@ const COMPONENT_TYPES = [
         color: 'bg-red-50 text-red-600',
         defaultData: { type: 'video', src: '', alt: 'Video', aspectRatio: 'aspect-video', caption: 'Video giới thiệu tổng quan' },
         presets: [
-            { label: 'Video Center', data: { type: 'video', src: '', align: 'center', caption: 'Xem video để hiểu rõ hơn về chúng tôi' } },
+            {
+                label: 'Video Căn Giữa',
+                description: 'Hiển thị video căn giữa màn hình với chú thích tùy chọn.',
+                data: { type: 'video', src: '', align: 'center', caption: 'Xem video để hiểu rõ hơn về chúng tôi' }
+            },
+            {
+                label: 'Video GIF (Autoplay)',
+                description: 'Video tự chạy, không tiếng, lặp lại (Giống ảnh động).',
+                data: {
+                    type: 'video',
+                    src: 'https://cdn.coverr.co/videos/coverr-typing-on-computer-keyboard-5503/1080p.mp4',
+                    align: 'center',
+                    autoPlay: true,
+                    muted: true,
+                    loop: true,
+                    controls: false,
+                    caption: ''
+                }
+            },
         ]
     },
     {
@@ -154,24 +183,48 @@ const COMPONENT_TYPES = [
         defaultData: { items: [{ date: '2024', title: 'Khởi đầu', description: 'Giai đoạn xây dựng nền móng.' }] },
         presets: [
             {
-                label: '3 Mốc (Lịch sử)',
+                label: 'Lịch sử phát triển',
+                description: 'Kể lại hành trình hình thành và phát triển theo thời gian.',
                 data: {
                     items: [
-                        { date: '2020', title: 'Thành lập', description: 'Bắt đầu với đội ngũ 5 thành viên.' },
-                        { date: '2022', title: 'Mở rộng', description: 'Đạt mốc 100 khách hàng đầu tiên.' },
-                        { date: '2024', title: 'Bứt phá', description: 'Ra mắt sản phẩm chủ lực 2.0.' }
+                        { year: '2022', title: 'Khởi tạo ý tưởng', description: 'Hình thành nhu cầu xây dựng hệ thống quản lý tiến độ học tập.' },
+                        { year: '2023', title: 'Phát triển hệ thống', description: 'Xây dựng dashboard và thử nghiệm nội bộ.' },
+                        { year: '2024', title: 'Triển khai thực tế', description: 'Áp dụng cho nhiều lớp và theo dõi theo năm học.' }
                     ]
                 }
             },
             {
-                label: '5 Mốc (Lộ trình)',
+                label: 'Lộ trình triển khai',
+                description: 'Roadmap kế hoạch các bước thực hiện trong tương lai.',
                 data: {
                     items: [
-                        { date: 'Q1', title: 'Nghiên cứu', description: 'Phân tích thị trường và nhu cầu.' },
-                        { date: 'Q2', title: 'Thiết kế', description: 'Xây dựng bản mẫu concept.' },
-                        { date: 'Q3', title: 'Phát triển', description: 'Lập trình tính năng cốt lõi.' },
-                        { date: 'Q4', title: 'Thử nghiệm', description: 'Beta test với người dùng.' },
-                        { date: 'Launch', title: 'Ra mắt', description: 'Chính thức công bố sản phẩm.' }
+                        { step: 'Bước 1', title: 'Thu thập dữ liệu', goal: 'Chuẩn hóa dữ liệu môn học và lớp học.' },
+                        { step: 'Bước 2', title: 'Phân tích tiến độ', goal: 'Tính toán tỷ lệ hoàn thành và cảnh báo trễ.' },
+                        { step: 'Bước 3', title: 'Hiển thị dashboard', goal: 'Trực quan hóa dữ liệu theo năm học.' },
+                        { step: 'Bước 4', title: 'Đánh giá & điều chỉnh', goal: 'Hỗ trợ quản lý can thiệp sớm.' },
+                        { step: 'Bước 5', title: 'Báo cáo tổng hợp', goal: 'Xuất báo cáo cho phòng đào tạo.' }
+                    ]
+                }
+            },
+            {
+                label: 'Quy trình hoạt động',
+                description: 'Giải thích cách hệ thống hoặc dịch vụ vận hành.',
+                data: {
+                    items: [
+                        { action: 'Thu thập dữ liệu', description: 'Ghi nhận tiến độ học tập từ giảng viên.' },
+                        { action: 'Xử lý & phân tích', description: 'Tự động tính toán trạng thái tiến độ.' },
+                        { action: 'Cảnh báo', description: 'Phát hiện lớp hoặc môn trễ tiến độ.' },
+                        { action: 'Theo dõi & điều chỉnh', description: 'Quản lý can thiệp kịp thời.' }
+                    ]
+                }
+            },
+            {
+                label: 'Trước và sau khi sử dụng',
+                description: 'So sánh hiệu quả để thuyết phục khách hàng.',
+                data: {
+                    items: [
+                        { phase: 'Trước khi sử dụng', status: 'Dữ liệu rời rạc, khó theo dõi tiến độ.' },
+                        { phase: 'Sau khi sử dụng', status: 'Tiến độ minh bạch, phát hiện trễ sớm.' }
                     ]
                 }
             }
@@ -187,6 +240,7 @@ const COMPONENT_TYPES = [
         presets: [
             {
                 label: '3 Câu (Cơ bản)',
+                description: 'Dạng danh sách ngắn gọn, phù hợp cho trang chủ hoặc landing page.',
                 data: {
                     items: [
                         { question: 'Làm thế nào để đăng ký tài khoản?', answer: 'Bạn nhấn nút Đăng ký ở góc phải và điền thông tin email.' },
@@ -197,6 +251,7 @@ const COMPONENT_TYPES = [
             },
             {
                 label: '5 Câu (Chi tiết)',
+                description: 'Danh sách mở rộng cho trang FAQ chi tiết hoặc sản phẩm phức tạp.',
                 data: { items: Array(5).fill({ question: 'Câu hỏi thường gặp?', answer: 'Câu trả lời giải đáp thắc mắc...' }) }
             }
         ]
@@ -211,6 +266,7 @@ const COMPONENT_TYPES = [
         presets: [
             {
                 label: '3 Bước (Đơn giản)',
+                description: 'Quy trình 3 bước lặp lại phổ biến (Đăng ký -> Xác nhận -> Sử dụng).',
                 data: {
                     items: [
                         { step: '01', title: 'Đăng ký', description: 'Điền form thông tin trực tuyến.' },
@@ -221,6 +277,7 @@ const COMPONENT_TYPES = [
             },
             {
                 label: '4 Bước (Quy trình)',
+                description: 'Quy trình chi tiết 4 bước cho dịch vụ hoặc thi công.',
                 data: {
                     items: [
                         { step: '01', title: 'Khảo sát', description: 'Đánh giá hiện trạng mặt bằng.' },
@@ -242,6 +299,7 @@ const COMPONENT_TYPES = [
         presets: [
             {
                 label: 'Top 3 (Nhất - Nhì - Ba)',
+                description: 'Hiển thị 3 giải thưởng lớn nhất theo thứ tự ưu tiên.',
                 data: {
                     items: [
                         { title: 'Giải Nhất', subtitle: '100 Triệu VNĐ', icon: 'trophy' },
@@ -252,6 +310,7 @@ const COMPONENT_TYPES = [
             },
             {
                 label: 'Danh sách giải (Dọc)',
+                description: 'Danh sách các hạng mục giải thưởng phụ hoặc chứng nhận.',
                 data: {
                     items: [
                         { title: 'Giải Sáng tạo', subtitle: 'Dành cho ý tưởng đột phá', icon: 'star' },
@@ -266,20 +325,20 @@ const COMPONENT_TYPES = [
 
 const ComponentPickerModal = ({ isOpen, onClose, onSelect }) => {
     useLockBodyScroll(isOpen);
-    const [expandedType, setExpandedType] = useState(null);
+    const [expandedId, setExpandedId] = useState(null);
 
     // Reset expanded state when modal closes
     React.useEffect(() => {
-        if (!isOpen) setExpandedType(null);
+        if (!isOpen) setExpandedId(null);
     }, [isOpen]);
 
     if (!isOpen) return null;
 
     const handleTypeClick = (item) => {
-        if (expandedType === item.type) {
-            setExpandedType(null); // Toggle off
+        if (expandedId === item.label) {
+            setExpandedId(null); // Toggle off
         } else {
-            setExpandedType(item.type); // Expand
+            setExpandedId(item.label); // Expand
         }
     };
 
@@ -287,7 +346,7 @@ const ComponentPickerModal = ({ isOpen, onClose, onSelect }) => {
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden zoom-in-95 max-h-[85vh] flex flex-col">
                 <div className="flex items-center justify-between p-4 border-b bg-gray-50 shrink-0">
-                    <h3 className="font-bold text-lg text-gray-800">Chọn thành phần</h3>
+                    <h3 className="font-bold text-lg text-gray-800">Chọn Block</h3>
                     <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full transition-colors text-gray-500">
                         <X size={20} />
                     </button>
@@ -297,7 +356,7 @@ const ComponentPickerModal = ({ isOpen, onClose, onSelect }) => {
                     <div className="p-4 grid gap-3">
                         {COMPONENT_TYPES.map((item) => {
                             const Icon = item.icon;
-                            const isExpanded = expandedType === item.type;
+                            const isExpanded = expandedId === item.label;
                             const hasPresets = item.presets && item.presets.length > 0;
 
                             return (
@@ -356,7 +415,7 @@ const ComponentPickerModal = ({ isOpen, onClose, onSelect }) => {
 
                                                         {/* Info Icon + Tooltip */}
                                                         {preset.description && (
-                                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-blue-500 relative group/info shrink-0">
+                                                            <div className="text-gray-300 hover:text-blue-500 relative group/info shrink-0 transition-colors">
                                                                 <HelpCircle size={16} />
 
                                                                 {/* Tooltip Content */}
