@@ -19,7 +19,13 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, onCancel, title, messag
 
     return (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className={`bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden zoom-in-95 border ${isDanger ? 'border-red-100' : 'border-blue-100'}`}>
+            <div className={`bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden zoom-in-95 border relative ${isDanger ? 'border-red-100' : 'border-blue-100'}`}>
+                <button
+                    onClick={onClose}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                    <X size={20} />
+                </button>
                 <div className="p-6 text-center">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${isDanger ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
                         <AlertTriangle size={24} />

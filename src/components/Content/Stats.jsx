@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Stats = ({ data, isEditing }) => {
-    const { items = [], styles = {} } = data;
+    const { items = [], styles = {}, backgroundColor: containerBg } = data;
 
     // Default styles (Yellow theme defaults)
     const {
@@ -29,7 +29,10 @@ const Stats = ({ data, isEditing }) => {
     };
 
     return (
-        <div className="w-full">
+        <div
+            className={`w-full ${containerBg ? 'p-6 rounded-xl' : ''}`}
+            style={{ backgroundColor: containerBg }}
+        >
             <div className={`grid gap-6 ${getGridClass(items.length)}`}>
                 {items.map((item, index) => {
                     const isLink = !!item.link;

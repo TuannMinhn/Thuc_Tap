@@ -51,12 +51,15 @@ const SectionCarousel = ({ children, settings = {}, isEditing }) => {
                 modules={[Pagination, Navigation, Autoplay]}
                 spaceBetween={24}
                 slidesPerView={1}
+                slidesPerGroup={1}
                 breakpoints={{
                     640: {
                         slidesPerView: Math.min(2, slidesPerView),
+                        slidesPerGroup: Math.min(2, slidesPerView),
                     },
                     1024: {
                         slidesPerView: slidesPerView,
+                        slidesPerGroup: slidesPerView,
                     },
                 }}
                 pagination={showDots && paginationEl ? { clickable: true, el: paginationEl } : false}

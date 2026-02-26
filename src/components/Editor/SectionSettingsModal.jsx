@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useBuilder } from '../../context/BuilderContext';
-import { X, Save, Layout, Palette, Monitor, AlignLeft, AlignCenter, AlignRight, Plus, Trash2, Check, GalleryHorizontal } from 'lucide-react';
+import { X, Save, Layout, Palette, Monitor, AlignLeft, AlignCenter, AlignRight, Plus, Trash2, Check, GalleryHorizontal, Type, Hash, Maximize2, Square, Layers } from 'lucide-react';
 import useLockBodyScroll from '../../hooks/useLockBodyScroll';
 
 const SectionSettingsModal = () => {
@@ -8,6 +8,8 @@ const SectionSettingsModal = () => {
     const [formData, setFormData] = useState(null);
     const [initialData, setInitialData] = useState(null);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+    const [slideCountInput, setSlideCountInput] = useState('');
+    const slideDebounceRef = useRef(null);
 
     // Gradient Builder State
     const [colorMode, setColorMode] = useState('preset'); // 'preset' | 'custom'
@@ -148,6 +150,31 @@ const SectionSettingsModal = () => {
                 {/* Body */}
                 <div className="p-6 overflow-y-auto space-y-8 flex-1">
 
+                    {/* ID Settings */}
+                    <section>
+                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Hash size={16} /> Định danh (ID)
+                        </h4>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">ID Section (Neo)</label>
+                            <input
+                                type="text"
+                                value={formData.anchorId || ''}
+                                onChange={(e) => {
+                                    const val = e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, '');
+                                    setFormData(prev => ({ ...prev, anchorId: val }));
+                                }}
+                                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm"
+                                placeholder="vi-du-gioi-thieu"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                                Dùng để tạo menu cuộn trang. Ví dụ đặt ID là <b>gioi-thieu</b>, thì khi vào Menu gán link là <b>#gioi-thieu</b>.
+                            </p>
+                        </div>
+                    </section>
+
+                    <hr className="border-gray-100" />
+
                     {/* Layout Settings */}
                     <section>
                         <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -173,16 +200,37 @@ const SectionSettingsModal = () => {
                                 ) : (
                                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm font-medium text-blue-800">Slides hiện có: {formData.columns.length}</span>
-                                            <button
-                                                onClick={() => updateColumns(formData.columns.length + 1)}
-                                                className="flex items-center gap-1 text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition"
-                                            >
-                                                <Plus size={14} /> Thêm Slide
-                                            </button>
+                                            <span className="text-sm font-medium text-blue-800">Số lượng Slides</span>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                value={slideCountInput}
+                                                onFocus={() => setSlideCountInput(String(formData.columns.length))}
+                                                onChange={(e) => {
+                                                    const inputVal = e.target.value.replace(/\D/g, '');
+                                                    setSlideCountInput(inputVal);
+
+                                                    if (slideDebounceRef.current) clearTimeout(slideDebounceRef.current);
+                                                    slideDebounceRef.current = setTimeout(() => {
+                                                        const val = parseInt(inputVal) || 1;
+                                                        if (val >= 1 && val <= 100) {
+                                                            updateColumns(val);
+                                                        }
+                                                    }, 600);
+                                                }}
+                                                onBlur={() => {
+                                                    if (slideDebounceRef.current) clearTimeout(slideDebounceRef.current);
+                                                    const val = parseInt(slideCountInput) || 1;
+                                                    if (val >= 1 && val <= 100) updateColumns(val);
+                                                    setSlideCountInput(String(formData.columns.length));
+                                                }}
+                                                placeholder={String(formData.columns.length)}
+                                                className="w-20 p-2 text-sm border border-blue-300 rounded-lg text-center bg-white focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+                                            />
                                         </div>
                                         <p className="text-xs text-blue-600">
-                                            Trong chế độ Carousel, mỗi cột sẽ là một Slide riêng biệt.
+                                            Nhập số và chờ 0.6 giây hoặc click ra ngoài để áp dụng.
                                         </p>
                                     </div>
                                 )}
@@ -298,9 +346,65 @@ const SectionSettingsModal = () => {
                                     )}
                                 </div>
                             </div>
+
+
                         </div>
 
 
+                    </section>
+
+                    <hr className="border-gray-100" />
+
+                    {/* Border & Shadow */}
+                    <section>
+                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Square size={16} /> Viền & Đổ bóng
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Bo góc (Border Radius)</label>
+                                <select
+                                    value={formData.style?.borderRadius || 'rounded-none'}
+                                    onChange={(e) => updateStyle('borderRadius', e.target.value)}
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                >
+                                    <option value="rounded-none">Không (0)</option>
+                                    <option value="rounded-lg">Nhỏ (8px)</option>
+                                    <option value="rounded-xl">Vừa (12px)</option>
+                                    <option value="rounded-2xl">Lớn (16px)</option>
+                                    <option value="rounded-3xl">Rất lớn (24px)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Viền (Border)</label>
+                                <select
+                                    value={formData.style?.border || 'border-none'}
+                                    onChange={(e) => updateStyle('border', e.target.value)}
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                >
+                                    <option value="border-none">Không viền</option>
+                                    <option value="border border-gray-200">Mỏng - Xám nhạt</option>
+                                    <option value="border border-gray-300">Mỏng - Xám</option>
+                                    <option value="border-2 border-gray-200">Dày - Xám nhạt</option>
+                                    <option value="border-2 border-blue-500">Dày - Xanh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Đổ bóng (Shadow)</label>
+                                <select
+                                    value={formData.style?.shadow || 'shadow-none'}
+                                    onChange={(e) => updateStyle('shadow', e.target.value)}
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                >
+                                    <option value="shadow-none">Không bóng</option>
+                                    <option value="shadow-sm">Nhỏ</option>
+                                    <option value="shadow-md">Vừa</option>
+                                    <option value="shadow-lg">Lớn</option>
+                                    <option value="shadow-xl">Rất lớn</option>
+                                    <option value="shadow-2xl">Cực lớn</option>
+                                </select>
+                            </div>
+                        </div>
                     </section>
 
                     <hr className="border-gray-100" />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useBuilder } from '../../context/BuilderContext';
-import { X, Save, AlignLeft, AlignCenter, AlignRight, AlignJustify, Plus, Trash2, Upload, Edit, Info } from 'lucide-react';
+import { X, Save, AlignLeft, AlignCenter, AlignRight, AlignJustify, Plus, Trash2, Upload, Edit, Info, LayoutTemplate } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import SortableItem from './SortableItem';
@@ -319,10 +319,47 @@ const PropertyModal = () => {
                                                     className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
                                                     placeholder="https://..."
                                                 />
-                                                <button className="p-2 border rounded hover:bg-gray-50 text-gray-500" title="Upload (Coming soon)">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    id="header-logo-upload"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => {
+                                                                handleChange('logo', reader.result);
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => document.getElementById('header-logo-upload').click()}
+                                                    className="p-2 border rounded hover:bg-blue-50 text-blue-600 hover:border-blue-300 transition-colors"
+                                                    title="Tải ảnh lên"
+                                                >
                                                     <Upload size={20} />
                                                 </button>
                                             </div>
+                                            {formData.logo && (
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <img
+                                                        src={formData.logo}
+                                                        alt="Logo preview"
+                                                        className="h-10 max-w-[120px] object-contain border rounded"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleChange('logo', '')}
+                                                        className="text-xs text-red-500 hover:text-red-700"
+                                                    >
+                                                        Xóa logo
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Tên trang web (Title)</label>
@@ -422,6 +459,34 @@ const PropertyModal = () => {
                                     {/* Style & Colors */}
                                     <div className="space-y-4">
                                         <h4 className="font-semibold text-gray-700 mb-3 border-b pb-2">Giao diện</h4>
+
+                                        {/* Layout Selection */}
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Kiểu Header</label>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <button
+                                                    onClick={() => handleChange('layout', 'standard')}
+                                                    className={`p-3 border rounded-lg text-sm font-medium flex flex-col items-center gap-2 transition-all ${(formData.layout || 'standard') === 'standard'
+                                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                                                        }`}
+                                                >
+                                                    <LayoutTemplate size={20} />
+                                                    Mặc định (Full)
+                                                </button>
+                                                <button
+                                                    onClick={() => handleChange('layout', 'floating')}
+                                                    className={`p-3 border rounded-lg text-sm font-medium flex flex-col items-center gap-2 transition-all ${formData.layout === 'floating'
+                                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                                                        }`}
+                                                >
+                                                    <div className="w-8 h-4 border-2 border-current rounded-full"></div>
+                                                    Nổi (Pill)
+                                                </button>
+                                            </div>
+                                        </div>
+
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Màu nền</label>
@@ -728,6 +793,29 @@ const PropertyModal = () => {
                                         />
                                         <p className="text-xs text-gray-500 mt-1">Khi bấm vào nội dung sẽ chuyển đến link này.</p>
                                     </div>
+
+                                    {/* Background Color Config */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-4">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền khung:</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#ffffff'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền"
+                                            />
+                                            {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                            {formData.backgroundColor && (
+                                                <button
+                                                    onClick={() => handleChange('backgroundColor', '')}
+                                                    className="text-xs text-red-500 hover:underline"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         }
@@ -852,6 +940,29 @@ const PropertyModal = () => {
                                             ))}
                                         </div>
                                     </div>
+
+                                    {/* Background Color Config (Container) */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-4">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền khung (Container):</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#ffffff'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền khung"
+                                            />
+                                            {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                            {formData.backgroundColor && (
+                                                <button
+                                                    onClick={() => handleChange('backgroundColor', '')}
+                                                    className="text-xs text-red-500 hover:underline"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         }
@@ -874,7 +985,8 @@ const PropertyModal = () => {
 
                                 description: { label: 'Mô tả', placeholder: 'Mô tả chi tiết...', type: 'textarea' },
                                 goal: { label: 'Mục tiêu / Kết quả', placeholder: 'Mục tiêu cần đạt...', type: 'textarea' },
-                                status: { label: 'Trạng thái / Kết quả', placeholder: 'Trạng thái hiện tại...', type: 'textarea' }
+                                status: { label: 'Trạng thái / Kết quả', placeholder: 'Trạng thái hiện tại...', type: 'textarea' },
+                                image: { label: 'Ảnh minh họa', placeholder: 'https://...', width: 'full' }
                             };
 
                             const handleTimelineChange = (index, field, value) => {
@@ -884,7 +996,7 @@ const PropertyModal = () => {
                             };
 
                             // Determine active fields based on template item
-                            const activeFields = Object.keys(templateItem).filter(key => FIELD_CONFIG[key]);
+                            const activeFields = [...Object.keys(templateItem).filter(key => FIELD_CONFIG[key]), 'image']; // Always include image option
 
                             return (
                                 <div className="space-y-4">
@@ -937,6 +1049,43 @@ const PropertyModal = () => {
                                                 />
                                             ))}
 
+                                            {/* Image Input */}
+                                            <div className="flex gap-2 items-center">
+                                                <input
+                                                    type="text"
+                                                    value={item.image || ''}
+                                                    onChange={(e) => handleTimelineChange(index, 'image', e.target.value)}
+                                                    className="flex-1 p-2 border rounded text-sm"
+                                                    placeholder="Link ảnh minh họa (http://...)"
+                                                />
+                                                <input
+                                                    type="file"
+                                                    id={`timeline-image-${index}`}
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => {
+                                                                handleTimelineChange(index, 'image', reader.result);
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                />
+                                                <button
+                                                    onClick={() => document.getElementById(`timeline-image-${index}`).click()}
+                                                    className="p-2 bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
+                                                    title="Tải ảnh lên"
+                                                >
+                                                    <Upload size={16} />
+                                                </button>
+                                                {item.image && (
+                                                    <img src={item.image} alt="Preview" className="w-8 h-8 rounded object-cover border" />
+                                                )}
+                                            </div>
+
                                             <button
                                                 onClick={() => {
                                                     const newItems = items.filter((_, i) => i !== index);
@@ -963,6 +1112,29 @@ const PropertyModal = () => {
                                     >
                                         <Plus size={16} /> Thêm sự kiện
                                     </button>
+
+                                    {/* Background Color Config */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-4">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền khung:</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#ffffff'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền"
+                                            />
+                                            {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                            {formData.backgroundColor && (
+                                                <button
+                                                    onClick={() => handleChange('backgroundColor', '')}
+                                                    className="text-xs text-red-500 hover:underline"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         }
@@ -1012,6 +1184,29 @@ const PropertyModal = () => {
                                     >
                                         <Plus size={16} /> Thêm câu hỏi
                                     </button>
+
+                                    {/* Background Color Config */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-4">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền khung:</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#ffffff'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền"
+                                            />
+                                            {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                            {formData.backgroundColor && (
+                                                <button
+                                                    onClick={() => handleChange('backgroundColor', '')}
+                                                    className="text-xs text-red-500 hover:underline"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         }
@@ -1070,6 +1265,29 @@ const PropertyModal = () => {
                                     >
                                         <Plus size={16} /> Thêm bước
                                     </button>
+
+                                    {/* Background Color Config */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-4">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền khung:</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#ffffff'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền"
+                                            />
+                                            {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                            {formData.backgroundColor && (
+                                                <button
+                                                    onClick={() => handleChange('backgroundColor', '')}
+                                                    className="text-xs text-red-500 hover:underline"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         }
@@ -1077,68 +1295,301 @@ const PropertyModal = () => {
                         // Prize Editor
                         if (selectedComponent.type === 'Prize') {
                             const items = formData.items || [];
+
+                            // Currency options
+                            const currencyOptions = [
+                                { code: 'VNĐ', symbol: '₫', locale: 'vi-VN' },
+                                { code: 'USD', symbol: '$', locale: 'en-US' },
+                                { code: 'EUR', symbol: '€', locale: 'de-DE' },
+                                { code: 'JPY', symbol: '¥', locale: 'ja-JP' },
+                                { code: 'KRW', symbol: '₩', locale: 'ko-KR' },
+                                { code: 'GBP', symbol: '£', locale: 'en-GB' },
+                                { code: 'CNY', symbol: '¥', locale: 'zh-CN' },
+                            ];
+
+                            // Format number with thousand separators
+                            const formatNumber = (num, locale = 'vi-VN') => {
+                                if (!num) return '';
+                                return new Intl.NumberFormat(locale).format(num);
+                            };
+
+                            // Parse number from formatted string
+                            const parseNumber = (str) => {
+                                if (!str) return '';
+                                return str.replace(/[^\d]/g, '');
+                            };
+
+                            // Combine amount and currency into formatted value with SMART FORMATTING
+                            const combineValue = (amount, currency) => {
+                                if (!amount) return '';
+
+                                // Smart formatting for VNĐ
+                                if (currency === 'VNĐ') {
+                                    const num = parseFloat(amount);
+                                    if (num >= 1000000000) {
+                                        const value = (num / 1000000000).toLocaleString('vi-VN', { maximumFractionDigits: 2 });
+                                        return `${value} Tỷ VNĐ`;
+                                    } else if (num >= 1000000) {
+                                        const value = (num / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 2 });
+                                        return `${value} Triệu VNĐ`;
+                                    }
+                                }
+
+                                const currencyInfo = currencyOptions.find(c => c.code === currency) || currencyOptions[0];
+                                const formattedAmount = formatNumber(amount, currencyInfo.locale);
+                                return `${formattedAmount} ${currency}`;
+                            };
+
+                            // Handle prize field changes
                             const handlePrizeChange = (index, field, value) => {
                                 const newItems = [...items];
                                 newItems[index] = { ...newItems[index], [field]: value };
+
+                                // Auto-combine amount + currency into value
+                                if (field === 'amount' || field === 'currency') {
+                                    const amount = field === 'amount' ? value : newItems[index].amount;
+                                    const currency = field === 'currency' ? value : (newItems[index].currency || 'VNĐ');
+                                    newItems[index].value = combineValue(amount, currency);
+                                }
+
                                 handleChange('items', newItems);
                             };
 
+                            // Extract amount from existing value
+                            const extractAmount = (value) => {
+                                if (!value) return '';
+                                let multiplier = 1;
+                                if (value.match(/Tỷ/i)) multiplier = 1000000000;
+                                else if (value.match(/Triệu/i)) multiplier = 1000000;
+                                else if (value.match(/Nghìn/i)) multiplier = 1000;
+
+                                let cleanStr = value.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.');
+                                const num = parseFloat(cleanStr);
+                                if (isNaN(num)) return parseNumber(value);
+                                return Math.round(num * multiplier).toString();
+                            };
+
+                            // Extract currency from existing value
+                            const extractCurrency = (value) => {
+                                if (!value) return 'VNĐ';
+                                const match = value.match(/(VNĐ|USD|EUR|JPY|KRW|GBP|CNY)/i);
+                                return match ? match[1].toUpperCase() : 'VNĐ';
+                            };
+
+                            const updateLayout = (key, val) => handleChange(key, val);
+
                             return (
-                                <div className="space-y-4">
-                                    <h4 className="font-semibold text-gray-700">Danh sách giải thưởng</h4>
-                                    {items.map((item, index) => (
-                                        <div key={index} className="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
-                                            <div className="flex gap-2">
-                                                <div className="flex-1">
-                                                    <label className="text-xs text-gray-500 font-bold block mb-1">Tên giải</label>
-                                                    <input
-                                                        type="text"
-                                                        value={item.title}
-                                                        onChange={(e) => handlePrizeChange(index, 'title', e.target.value)}
-                                                        className="w-full p-2 border rounded font-bold"
-                                                        placeholder="VD: Giải nhất"
-                                                    />
-                                                </div>
-                                                <div className="w-1/3">
-                                                    <label className="text-xs text-gray-500 font-bold block mb-1">Icon</label>
-                                                    <select
-                                                        value={item.icon}
-                                                        onChange={(e) => handlePrizeChange(index, 'icon', e.target.value)}
-                                                        className="w-full p-2 border rounded"
-                                                    >
-                                                        <option value="award">Award</option>
-                                                        <option value="trophy">Trophy</option>
-                                                        <option value="star">Star</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="text-xs text-gray-500 font-bold block mb-1">Giá trị / Mô tả phụ</label>
-                                                <input
-                                                    type="text"
-                                                    value={item.subtitle}
-                                                    onChange={(e) => handlePrizeChange(index, 'subtitle', e.target.value)}
-                                                    className="w-full p-2 border rounded text-sm"
-                                                    placeholder="VD: 500.000 VNĐ"
-                                                />
-                                            </div>
+                                <div className="space-y-6">
+                                    {/* Layout Settings Section */}
+                                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 space-y-4">
+                                        <h4 className="font-bold text-blue-800 flex items-center gap-2">
+                                            <LayoutTemplate size={18} /> Cấu trúc hiển thị
+                                        </h4>
+                                        <div className="grid grid-cols-2 gap-4">
                                             <button
-                                                onClick={() => {
-                                                    const newItems = items.filter((_, i) => i !== index);
-                                                    handleChange('items', newItems);
-                                                }}
-                                                className="text-red-500 text-xs hover:underline"
+                                                onClick={() => updateLayout('layout', 'vertical')}
+                                                className={`p-3 rounded-lg border flex flex-col items-center gap-2 transition-all ${(!formData.layout || formData.layout === 'vertical') ? 'bg-white border-blue-500 shadow-md text-blue-600' : 'bg-white/50 border-gray-200 hover:bg-white text-gray-500'}`}
                                             >
-                                                Xóa giải này
+                                                <div className="w-8 h-10 border-2 border-current rounded border-dashed flex flex-col gap-1 p-1">
+                                                    <div className="w-full h-1 bg-current rounded-full" />
+                                                    <div className="w-full h-1 bg-current rounded-full" />
+                                                    <div className="w-full h-1 bg-current rounded-full" />
+                                                </div>
+                                                <span className="text-sm font-medium">Dọc (Mặc định)</span>
+                                            </button>
+                                            <button
+                                                onClick={() => updateLayout('layout', 'horizontal')}
+                                                className={`p-3 rounded-lg border flex flex-col items-center gap-2 transition-all ${(formData.layout === 'horizontal') ? 'bg-white border-blue-500 shadow-md text-blue-600' : 'bg-white/50 border-gray-200 hover:bg-white text-gray-500'}`}
+                                            >
+                                                <div className="w-10 h-8 border-2 border-current rounded border-dashed flex gap-1 p-1">
+                                                    <div className="w-1/3 h-full bg-current rounded" />
+                                                    <div className="w-2/3 h-full flex flex-col gap-1">
+                                                        <div className="w-full h-0.5 bg-current rounded-full" />
+                                                        <div className="w-full h-0.5 bg-current rounded-full" />
+                                                    </div>
+                                                </div>
+                                                <span className="text-sm font-medium">Ngang (Tiêu đề trái)</span>
                                             </button>
                                         </div>
-                                    ))}
-                                    <button
-                                        onClick={() => handleChange('items', [...items, { title: 'Giải mới', subtitle: '...', icon: 'award' }])}
-                                        className="w-full py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium flex items-center justify-center gap-2"
-                                    >
-                                        <Plus size={16} /> Thêm giải thưởng
-                                    </button>
+                                        {formData.layout === 'horizontal' && (
+                                            <div className="animate-in fade-in slide-in-from-top-2 border-t pt-3 mt-2">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <label className="block text-sm font-medium text-gray-700">Tiêu đề lớn bên trái</label>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={formData.blockTitle || 'Giải thưởng'}
+                                                        onChange={(e) => updateLayout('blockTitle', e.target.value)}
+                                                        className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                                        placeholder="VD: Giải thưởng"
+                                                    />
+                                                    <div className="relative w-24">
+                                                        <input
+                                                            type="number"
+                                                            value={formData.blockTitleSize || 36}
+                                                            onChange={(e) => updateLayout('blockTitleSize', e.target.value)}
+                                                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                                            placeholder="Size"
+                                                            title="Kích thước chữ (px)"
+                                                        />
+                                                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">px</span>
+                                                    </div>
+                                                    <div className="relative group/color" title="Màu chữ">
+                                                        <input
+                                                            type="color"
+                                                            value={formData.blockTitleColor || '#eab308'}
+                                                            onChange={(e) => updateLayout('blockTitleColor', e.target.value)}
+                                                            className="w-10 h-10 p-1 border rounded-lg cursor-pointer bg-white"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Background Color Config */}
+                                        <div className="flex items-center gap-3 pt-2 border-t border-blue-200 mt-2">
+                                            <span className="text-sm font-medium text-blue-800">Màu nền khung:</span>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={formData.backgroundColor || '#ffffff'}
+                                                    onChange={(e) => updateLayout('backgroundColor', e.target.value)}
+                                                    className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                    title="Chọn màu nền"
+                                                />
+                                                {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                                {formData.backgroundColor && (
+                                                    <button
+                                                        onClick={() => updateLayout('backgroundColor', '')}
+                                                        className="text-xs text-red-500 hover:underline"
+                                                    >
+                                                        Xóa
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h4 className="font-bold text-gray-700">Danh sách giải thưởng</h4>
+                                            <div className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1">
+                                                <Info size={14} /> Tip: Nhập số tiền cụ thể để dùng tính năng thông minh
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {items.map((item, index) => (
+                                                <div key={index} className="border rounded-xl p-4 bg-gray-50/50 hover:bg-white transition-colors relative group/item">
+                                                    <div className="flex gap-3">
+                                                        <div className="flex-1">
+                                                            <label className="text-xs text-gray-500 font-bold block mb-1">Tên giải</label>
+                                                            <input type="text" value={item.title || ''} onChange={(e) => handlePrizeChange(index, 'title', e.target.value)} className="w-full p-2 border rounded font-bold" placeholder="VD: Giải nhất" />
+                                                        </div>
+                                                        <div className="w-2/5">
+                                                            <label className="text-xs text-gray-500 font-bold block mb-1">Giá trị</label>
+                                                            <div className="flex gap-1">
+                                                                <input type="text" value={item.amount || extractAmount(item.value)} onChange={(e) => handlePrizeChange(index, 'amount', parseNumber(e.target.value))} className="flex-1 p-2 border rounded text-sm text-right" placeholder="3000000" />
+                                                                <select value={item.currency || extractCurrency(item.value)} onChange={(e) => handlePrizeChange(index, 'currency', e.target.value)} className="w-20 p-2 border rounded text-sm bg-white">
+                                                                    {currencyOptions.map(c => (<option key={c.code} value={c.code}>{c.code}</option>))}
+                                                                </select>
+                                                            </div>
+                                                            {(item.amount || extractAmount(item.value)) && (
+                                                                <div className="text-xs text-gray-400 mt-1 text-right">→ {item.value || combineValue(extractAmount(item.value), extractCurrency(item.value))}</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs text-gray-500 font-bold block mb-1">Mô tả</label>
+                                                        <input type="text" value={item.description || ''} onChange={(e) => handlePrizeChange(index, 'description', e.target.value)} className="w-full p-2 border rounded text-sm" placeholder="VD: Bao gồm tiền mặt..." />
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-4 items-center pt-2 border-t border-gray-200">
+                                                        <div className="flex items-center gap-2">
+                                                            <label className="text-xs text-gray-500 font-bold">Icon:</label>
+                                                            <select value={item.icon || 'trophy'} onChange={(e) => handlePrizeChange(index, 'icon', e.target.value)} className="p-1.5 border rounded text-sm">
+                                                                <option value="trophy">🏆 Trophy</option>
+                                                                <option value="crown">👑 Crown</option>
+                                                                <option value="medal">🥇 Medal</option>
+                                                                <option value="star">⭐ Star</option>
+                                                                <option value="gift">🎁 Gift</option>
+                                                                <option value="sparkles">✨ Sparkles</option>
+                                                                <option value="award">🎖️ Award</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <label className="text-xs text-gray-500 font-bold">Số lượng:</label>
+                                                            <select value={item.multiplier || ''} onChange={(e) => handlePrizeChange(index, 'multiplier', e.target.value)} className="p-1.5 border rounded text-sm">
+                                                                <option value="">1 (mặc định)</option>
+                                                                <option value="2x">2x</option>
+                                                                <option value="3x">3x</option>
+                                                                <option value="4x">4x</option>
+                                                                <option value="5x">5x</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <label className="text-xs text-gray-500 font-bold">Màu nổi bật:</label>
+                                                            <div className="flex gap-1">
+                                                                {/* Presets */}
+                                                                {[
+                                                                    { color: 'orange', bg: 'bg-orange-400', border: 'border-orange-500', label: 'Cam (Mặc định)' },
+                                                                    { color: 'red', bg: 'bg-red-400', border: 'border-red-500', label: 'Đỏ' },
+                                                                    { color: 'blue', bg: 'bg-blue-400', border: 'border-blue-500', label: 'Xanh dương' },
+                                                                    { color: 'green', bg: 'bg-green-400', border: 'border-green-500', label: 'Xanh lá' },
+                                                                    { color: 'purple', bg: 'bg-purple-400', border: 'border-purple-500', label: 'Tím' },
+                                                                    { color: 'pink', bg: 'bg-pink-400', border: 'border-pink-500', label: 'Hồng' },
+                                                                    { color: 'cyan', bg: 'bg-cyan-400', border: 'border-cyan-500', label: 'Xanh ngọc' }
+                                                                ].map(c => {
+                                                                    // Check if this color is selected. 
+                                                                    // If color is 'orange', it's selected if item.highlightColor is 'orange' OR empty/undefined (default)
+                                                                    const isSelected = item.highlightColor === c.color || (c.color === 'orange' && !item.highlightColor);
+
+                                                                    return (
+                                                                        <button
+                                                                            key={c.color}
+                                                                            type="button"
+                                                                            onClick={() => handlePrizeChange(index, 'highlightColor', c.color)}
+                                                                            className={`w-5 h-5 rounded ${c.bg} border-2 transition-all ${isSelected ? `${c.border} ring-2 ring-offset-1 ring-${c.color}-300` : 'border-transparent hover:scale-110'}`}
+                                                                            title={c.label}
+                                                                        />
+                                                                    );
+                                                                })}
+
+                                                                {/* Custom Color Picker */}
+                                                                <div className="relative group/picker" title="Chọn màu tùy ý">
+                                                                    <label className={`w-5 h-5 rounded border-2 overflow-hidden flex items-center justify-center cursor-pointer transition-all bg-white relative ${item.highlightColor?.startsWith('#') ? 'border-gray-400 ring-2 ring-offset-1 ring-gray-300' : 'border-gray-300 border-dashed hover:border-gray-400 hover:scale-110'}`}>
+                                                                        {/* Background Color Display (if chosen) */}
+                                                                        {item.highlightColor?.startsWith('#') ? (
+                                                                            <div className="absolute inset-0 w-full h-full" style={{ backgroundColor: item.highlightColor }} />
+                                                                        ) : (
+                                                                            <span className="text-gray-400 text-[10px] leading-none select-none">+</span>
+                                                                        )}
+                                                                        <input
+                                                                            type="color"
+                                                                            value={item.highlightColor?.startsWith('#') ? item.highlightColor : '#f97316'}
+                                                                            onChange={(e) => handlePrizeChange(index, 'highlightColor', e.target.value)}
+                                                                            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer p-0 border-0"
+                                                                        />
+                                                                    </label>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <label className="text-xs text-gray-500 font-bold">Đậm nhạt:</label>
+                                                            <select value={item.hoverIntensity || 'medium'} onChange={(e) => handlePrizeChange(index, 'hoverIntensity', e.target.value)} className="p-1 px-2 border rounded text-xs bg-white text-gray-700 h-6 outline-none focus:border-blue-500" title="Cường độ màu khi hover">
+                                                                <option value="soft">Nhạt</option>
+                                                                <option value="medium">Vừa</option>
+                                                                <option value="strong">Đậm</option>
+                                                            </select>
+                                                        </div>
+                                                        <button onClick={() => { const newItems = items.filter((_, i) => i !== index); handleChange('items', newItems); }} className="ml-auto text-red-500 text-xs hover:underline">Xóa giải này</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            <button onClick={() => handleChange('items', [...items, { title: 'Giải mới', description: 'Mô tả giải thưởng', value: '500.000 VNĐ', highlight: false }])} className="w-full py-2 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 font-medium flex items-center justify-center gap-2"><Plus size={16} /> Thêm giải thưởng</button>
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         }
@@ -1235,6 +1686,55 @@ const PropertyModal = () => {
                                         />
                                     </div>
 
+                                    {/* Video Controls (Only show if type is video or src is video) */}
+                                    {(formData.type === 'video' || formData.src?.match(/\.(mp4|webm|ogg)$|youtube\.com|youtu\.be/)) && (
+                                        <div className="space-y-3 pt-2 border-t border-gray-100">
+                                            <label className="block text-sm font-bold text-gray-700">Cài đặt Video</label>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <label className="flex items-center gap-2 cursor-pointer select-none bg-gray-50 p-2 rounded border hover:bg-white transition-colors">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.autoPlay || false}
+                                                        onChange={(e) => handleChange('autoPlay', e.target.checked)}
+                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                                    />
+                                                    <span className="text-sm text-gray-700">Tự động phát</span>
+                                                </label>
+
+                                                <label className="flex items-center gap-2 cursor-pointer select-none bg-gray-50 p-2 rounded border hover:bg-white transition-colors">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.muted || false}
+                                                        onChange={(e) => handleChange('muted', e.target.checked)}
+                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                                    />
+                                                    <span className="text-sm text-gray-700">Tắt tiếng (Mute)</span>
+                                                </label>
+
+                                                <label className="flex items-center gap-2 cursor-pointer select-none bg-gray-50 p-2 rounded border hover:bg-white transition-colors">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.loop || false}
+                                                        onChange={(e) => handleChange('loop', e.target.checked)}
+                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                                    />
+                                                    <span className="text-sm text-gray-700">Lặp lại (Loop)</span>
+                                                </label>
+
+                                                <label className="flex items-center gap-2 cursor-pointer select-none bg-gray-50 p-2 rounded border hover:bg-white transition-colors">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.controls !== false} // Default to true if undefined
+                                                        onChange={(e) => handleChange('controls', e.target.checked)}
+                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                                                    />
+                                                    <span className="text-sm text-gray-700">Hiện điều khiển</span>
+                                                </label>
+                                            </div>
+                                            <p className="text-xs text-gray-500 italic">* Lưu ý: Trình duyệt thường yêu cầu <b>Tắt tiếng</b> để cho phép <b>Tự động phát</b>.</p>
+                                        </div>
+                                    )}
+
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">Link liên kết</label>
                                         <input
@@ -1244,6 +1744,29 @@ const PropertyModal = () => {
                                             className="w-full p-2 border rounded-md"
                                             placeholder="https://..."
                                         />
+                                    </div>
+
+                                    {/* Background Color Config */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-4">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền khung:</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#ffffff'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền"
+                                            />
+                                            {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                            {formData.backgroundColor && (
+                                                <button
+                                                    onClick={() => handleChange('backgroundColor', '')}
+                                                    className="text-xs text-red-500 hover:underline"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -1358,6 +1881,29 @@ const PropertyModal = () => {
                                             {formData.label || 'Button'}
                                             {formData.icon && <span className="ml-2">→</span>}
                                         </button>
+                                    </div>
+
+                                    {/* Background Color Config */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100 mt-4">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền khung:</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#ffffff'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền"
+                                            />
+                                            {!formData.backgroundColor && <span className="text-xs text-gray-500">(Trong suốt)</span>}
+                                            {formData.backgroundColor && (
+                                                <button
+                                                    onClick={() => handleChange('backgroundColor', '')}
+                                                    className="text-xs text-red-500 hover:underline"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             );

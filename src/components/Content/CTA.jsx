@@ -9,7 +9,8 @@ const CTA = ({ data, isEditing }) => {
         size = "medium", // small, medium, large
         align = "center", // left, center, right
         fullWidth = false,
-        icon = false
+        icon = false,
+        backgroundColor
     } = data;
 
     const getBaseStyles = () => {
@@ -52,7 +53,10 @@ const CTA = ({ data, isEditing }) => {
     );
 
     return (
-        <div className={`w-full flex ${alignClass} py-2`}>
+        <div
+            className={`w-full flex ${alignClass} py-2`}
+            style={{ backgroundColor }}
+        >
             {Content}
         </div>
     );

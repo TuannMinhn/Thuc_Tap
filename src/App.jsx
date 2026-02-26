@@ -8,6 +8,8 @@ import { BuilderProvider, useBuilder } from './context/BuilderContext';
 import EditorToolbar from './components/Editor/EditorToolbar';
 import PropertyModal from './components/Editor/PropertyModal';
 import SectionSettingsModal from './components/Editor/SectionSettingsModal';
+import SaveToast from './components/Editor/SaveToast';
+import PreviewFrame from './components/Editor/PreviewFrame';
 
 // Route helper to set Edit Mode based on URL
 const RouteHandler = ({ mode }) => {
@@ -21,14 +23,20 @@ const RouteHandler = ({ mode }) => {
 };
 
 const PageContent = ({ showToolbar }) => {
-  const { config } = useBuilder();
+  const { config, isEditing } = useBuilder();
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Header config={config.header} />
 
       <div className="flex-grow">
-        <PageBuilder sections={config.sections} />
+        {showToolbar && !isEditing ? (
+          <PreviewFrame>
+            <PageBuilder sections={config.sections} />
+          </PreviewFrame>
+        ) : (
+          <PageBuilder sections={config.sections} />
+        )}
       </div>
 
       <Footer config={config.footer} />
@@ -38,6 +46,7 @@ const PageContent = ({ showToolbar }) => {
           <EditorToolbar />
           <PropertyModal />
           <SectionSettingsModal />
+          <SaveToast />
         </>
       )}
     </div>

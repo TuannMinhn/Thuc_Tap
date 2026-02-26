@@ -7,3 +7,13 @@
     @apply antialiased text-gray-900 bg-white;
   }
 }
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-150%);
+  }
+
+  100% {
+    transform: translateX(150%);
+  }
+}

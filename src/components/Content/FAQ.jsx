@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const FAQ = ({ data }) => {
-    const { items = [] } = data || {};
+    const { items = [], backgroundColor } = data || {};
     const [openIndex, setOpenIndex] = useState(0);
 
     const toggle = (index) => {
@@ -16,7 +16,10 @@ const FAQ = ({ data }) => {
     ];
 
     return (
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div
+            className={`max-w-3xl mx-auto space-y-4 ${backgroundColor ? 'p-6 rounded-xl' : ''}`}
+            style={{ backgroundColor }}
+        >
             {displayItems.map((item, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
                     <button

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const RichText = ({ data, isEditing }) => {
-    const { title, subtitle, content, align, contentStyle = {}, titleStyle = {}, subtitleStyle = {}, link } = data;
+    const { title, subtitle, content, align, contentStyle = {}, titleStyle = {}, subtitleStyle = {}, link, backgroundColor } = data;
 
     const alignmentClass = {
         'text-left': 'text-left',
@@ -43,7 +43,10 @@ const RichText = ({ data, isEditing }) => {
         }
 
         return (
-            <div className={`prose max-w-none ${alignmentClass} group`}>
+            <div
+                className={`prose max-w-none ${alignmentClass} group ${backgroundColor ? 'p-6 rounded-xl' : ''}`}
+                style={{ backgroundColor }}
+            >
                 {title && (
                     <h2
                         className={`text-gray-800 ${getClasses(titleStyle, 'h2')} ${link ? 'group-hover:text-blue-600 transition-colors' : ''}`}

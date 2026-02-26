@@ -10,7 +10,10 @@ const Header = ({ config }) => {
         logo,
         menuItems = [],
         backgroundImage,
-        backgroundVideo
+        backgroundVideo,
+        layout = 'standard', // 'standard' | 'floating'
+        actionButtonLabel = 'Contact Us',
+        actionButtonLink = '#'
     } = config;
 
     const headerStyle = {};
@@ -20,9 +23,25 @@ const Header = ({ config }) => {
         headerStyle.backgroundPosition = 'center';
     }
 
+    // Dynamic Classes based on layout
+    const isFloating = layout === 'floating';
+
+    // Base container classes
+    let containerClasses = `relative shadow-md transition-all duration-300 ${textColor}`;
+
+    // Apply background only if not standard (standard applies it to full width header)
+    // Actually, for standard, we want full width background.
+    // For floating, we want the pill to have the background.
+
+    if (isFloating) {
+        containerClasses += ` w-[95%] max-w-7xl mx-auto mt-6 rounded-full px-6 z-50 ${backgroundColor}`;
+    } else {
+        containerClasses += ` w-full ${backgroundColor}`;
+    }
+
     return (
-        <header className={`relative ${backgroundColor} ${textColor} shadow-md`}>
-            {backgroundVideo && (
+        <header className={containerClasses} style={isFloating ? {} : headerStyle}>
+            {backgroundVideo && !isFloating && (
                 <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
                     <video
                         autoPlay
@@ -34,9 +53,23 @@ const Header = ({ config }) => {
                     </video>
                 </div>
             )}
+
+            {/* Background for Floating Mode (if image/video needed inside the pill) */}
+            {isFloating && (backgroundImage || backgroundVideo) && (
+                <div className="absolute inset-0 w-full h-full overflow-hidden z-0 rounded-full">
+                    {backgroundVideo ? (
+                        <video autoPlay loop muted className="w-full h-full object-cover opacity-50">
+                            <source src={backgroundVideo} type="video/mp4" />
+                        </video>
+                    ) : (
+                        <div className="w-full h-full bg-cover bg-center" style={headerStyle} />
+                    )}
+                </div>
+            )}
+
             {/* Section Controls (Like Section.jsx) for Header */}
             {isEditing && (
-                <div className="absolute top-0 left-0 right-0 h-full border-2 border-dashed border-transparent hover:border-blue-300 pointer-events-none z-20">
+                <div className={`absolute top-0 left-0 right-0 h-full border-2 border-dashed border-transparent hover:border-blue-300 pointer-events-none z-20 ${isFloating ? 'rounded-full' : ''}`}>
                     <div className="absolute top-4 right-4 bg-white shadow-md rounded-md flex overflow-hidden border pointer-events-auto">
                         <button className="p-2 hover:bg-gray-100 text-gray-400 cursor-not-allowed border-r" title="Lên (Header cố định)">
                             <ArrowUp size={16} />
@@ -77,7 +110,7 @@ const Header = ({ config }) => {
                 </div>
             )}
 
-            <div className="container mx-auto px-4 py-4 relative z-10 flex items-center justify-between">
+            <div className={`container mx-auto py-3 relative z-10 flex items-center justify-between ${isFloating ? 'px-2' : 'px-4'}`}>
                 {/* Logo / Title */}
                 <div className="flex items-center gap-3">
                     {logo && <img src={logo} alt="Logo" className="h-10 w-10 object-contain" />}
@@ -90,7 +123,7 @@ const Header = ({ config }) => {
                         <a
                             key={index}
                             href={item.link || '#'}
-                            className="hover:opacity-75 font-medium transition-opacity"
+                            className="hover:opacity-75 font-medium transition-opacity px-2 py-1 rounded-md hover:bg-black/5"
                         >
                             {item.label}
                         </a>
@@ -99,12 +132,22 @@ const Header = ({ config }) => {
 
                 {/* Icons / Actions */}
                 <div className="flex items-center gap-4">
-                    <button className="p-2 hover:bg-black/10 rounded-full transition-colors">
+                    <button className="p-2 hover:bg-black/10 rounded-full transition-colors hidden md:block">
                         <Search size={20} />
                     </button>
-                    <button className="hidden md:block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Contact Us
-                    </button>
+
+                    {actionButtonLabel && (
+                        <a
+                            href={actionButtonLink}
+                            className={`hidden md:block px-6 py-2.5 rounded-full font-bold transition-all shadow-sm hover:shadow-md active:scale-95 ${layout === 'floating'
+                                    ? 'bg-yellow-500 text-white hover:bg-yellow-600' // Gold style for floating as seen in image
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                }`}
+                        >
+                            {actionButtonLabel}
+                        </a>
+                    )}
+
                     <button className="md:hidden p-2 hover:bg-black/10 rounded-full">
                         <Menu size={24} />
                     </button>

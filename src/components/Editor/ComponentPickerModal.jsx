@@ -154,13 +154,22 @@ const COMPONENT_TYPES = [
         defaultData: { type: 'video', src: '', alt: 'Video', aspectRatio: 'aspect-video', caption: 'Video giới thiệu tổng quan' },
         presets: [
             {
-                label: 'Video Căn Giữa',
-                description: 'Hiển thị video căn giữa màn hình với chú thích tùy chọn.',
-                data: { type: 'video', src: '', align: 'center', caption: 'Xem video để hiểu rõ hơn về chúng tôi' }
+                label: 'Video Player (Cơ bản)',
+                description: 'Video có trình điều khiển, người dùng tự bấm play.',
+                data: {
+                    type: 'video',
+                    src: '',
+                    align: 'center',
+                    caption: 'Xem video để hiểu rõ hơn về chúng tôi',
+                    autoPlay: false,
+                    muted: false,
+                    loop: false,
+                    controls: true
+                }
             },
             {
-                label: 'Video GIF (Autoplay)',
-                description: 'Video tự chạy, không tiếng, lặp lại (Giống ảnh động).',
+                label: 'Video Autoplay (Giống GIF)',
+                description: 'Video tự chạy, không tiếng, lặp lại (Dùng làm nền/hiệu ứng).',
                 data: {
                     type: 'video',
                     src: 'https://cdn.coverr.co/videos/coverr-typing-on-computer-keyboard-5503/1080p.mp4',
@@ -293,29 +302,48 @@ const COMPONENT_TYPES = [
         type: 'Prize',
         label: 'Prize / Rewards Block',
         icon: Award,
-        description: 'Giải thưởng, chứng nhận',
+        description: 'Giải thưởng cuộc thi, danh hiệu',
         color: 'bg-pink-50 text-pink-600',
-        defaultData: { items: [{ title: 'Chứng nhận ISO', subtitle: '9001:2015', icon: 'award' }] },
+        defaultData: {
+            items: [
+                { title: 'Giải nhất', description: 'Giải thưởng cao nhất cuộc thi', value: '3.000.000 VNĐ', highlight: true },
+                { title: 'Giải nhì', description: 'Giải thưởng hạng nhì', value: '2.000.000 VNĐ', highlight: true },
+                { title: 'Giải ba', description: 'Giải thưởng hạng ba', value: '1.000.000 VNĐ', highlight: true }
+            ]
+        },
         presets: [
             {
-                label: 'Top 3 (Nhất - Nhì - Ba)',
-                description: 'Hiển thị 3 giải thưởng lớn nhất theo thứ tự ưu tiên.',
+                label: 'Cuộc thi (Đầy đủ)',
+                description: 'Bảng giải thưởng đầy đủ cho cuộc thi với giải chính và giải phụ.',
                 data: {
                     items: [
-                        { title: 'Giải Nhất', subtitle: '100 Triệu VNĐ', icon: 'trophy' },
-                        { title: 'Giải Nhì', subtitle: '50 Triệu VNĐ', icon: 'award' },
-                        { title: 'Giải Ba', subtitle: '20 Triệu VNĐ', icon: 'star' }
+                        { title: 'Giải nhất', description: 'Bao gồm tiền mặt, giấy khen và quà từ đối tác', value: '3.000.000 VNĐ', highlight: true },
+                        { title: 'Giải nhì', description: 'Bao gồm tiền mặt, giấy khen và quà từ đối tác', value: '2.000.000 VNĐ', highlight: true },
+                        { title: 'Giải ba', description: 'Bao gồm tiền mặt, giấy khen và quà từ đối tác', value: '1.000.000 VNĐ', highlight: true },
+                        { title: 'Giải khuyến khích', description: 'Bao gồm tiền mặt và giấy khen', value: '500.000 VNĐ', multiplier: '2x' },
+                        { title: 'Giải bình chọn', description: 'Bao gồm quà tặng và giấy khen', value: '500.000 VNĐ', multiplier: '3x' }
                     ]
                 }
             },
             {
-                label: 'Danh sách giải (Dọc)',
-                description: 'Danh sách các hạng mục giải thưởng phụ hoặc chứng nhận.',
+                label: 'Top 3 (Nhất - Nhì - Ba)',
+                description: 'Chỉ hiển thị 3 giải thưởng chính, gọn gàng.',
                 data: {
                     items: [
-                        { title: 'Giải Sáng tạo', subtitle: 'Dành cho ý tưởng đột phá', icon: 'star' },
-                        { title: 'Giải Cống hiến', subtitle: 'Dành cho thành viên lâu năm', icon: 'award' },
-                        { title: 'Giải Triển vọng', subtitle: 'Dành cho nhân tố mới', icon: 'award' }
+                        { title: 'Giải Nhất', description: 'Giải thưởng cao nhất', value: '100 Triệu VNĐ', highlight: true },
+                        { title: 'Giải Nhì', description: 'Giải thưởng hạng nhì', value: '50 Triệu VNĐ', highlight: true },
+                        { title: 'Giải Ba', description: 'Giải thưởng hạng ba', value: '20 Triệu VNĐ', highlight: true }
+                    ]
+                }
+            },
+            {
+                label: 'Danh hiệu & Chứng nhận',
+                description: 'Không có giá trị tiền, chỉ hiển thị tên và mô tả.',
+                data: {
+                    items: [
+                        { title: 'Giải Sáng tạo', description: 'Dành cho ý tưởng đột phá nhất', value: '', highlight: false },
+                        { title: 'Giải Cống hiến', description: 'Dành cho thành viên lâu năm', value: '', highlight: false },
+                        { title: 'Giải Triển vọng', description: 'Dành cho nhân tố mới nổi bật', value: '', highlight: false }
                     ]
                 }
             }

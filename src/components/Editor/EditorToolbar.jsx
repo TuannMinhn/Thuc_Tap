@@ -1,9 +1,9 @@
 import React from 'react';
 import { useBuilder } from '../../context/BuilderContext';
-import { Edit2, Eye, Save, Download, ExternalLink } from 'lucide-react';
+import { Edit2, Eye, Save, Download, ExternalLink, RotateCcw, RotateCw } from 'lucide-react';
 
 const EditorToolbar = () => {
-    const { isEditing, setIsEditing, config } = useBuilder();
+    const { isEditing, setIsEditing, config, actions, history } = useBuilder();
 
     const handleExport = () => {
         const fileContent = `export const landingPageConfig = ${JSON.stringify(config, null, 4)};`;
@@ -18,6 +18,36 @@ const EditorToolbar = () => {
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+            {/* Undo/Redo Buttons */}
+            {isEditing && (
+                <div className="flex gap-2 mb-2">
+                    <button
+                        onClick={actions.undo}
+                        disabled={!history?.past?.length}
+                        className={`p-3 rounded-full shadow-lg transition-all flex items-center justify-center
+                            ${history?.past?.length
+                                ? 'bg-white text-gray-700 hover:bg-gray-50'
+                                : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                            }`}
+                        title="Undo (Ctrl+Z)"
+                    >
+                        <RotateCcw size={20} />
+                    </button>
+                    <button
+                        onClick={actions.redo}
+                        disabled={!history?.future?.length}
+                        className={`p-3 rounded-full shadow-lg transition-all flex items-center justify-center
+                            ${history?.future?.length
+                                ? 'bg-white text-gray-700 hover:bg-gray-50'
+                                : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                            }`}
+                        title="Redo (Ctrl+Y)"
+                    >
+                        <RotateCw size={20} />
+                    </button>
+                </div>
+            )}
+
             <button
                 onClick={() => window.open('/preview', '_blank')}
                 className="bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-all flex items-center justify-center tooltip-container"
