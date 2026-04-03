@@ -13,6 +13,7 @@ import FAQ from '../Content/FAQ';
 import Steps from '../Content/Steps';
 import Prize from '../Content/Prize';
 import CTA from '../Content/CTA';
+import ContactForm from '../Content/ContactForm';
 
 const COMPONENT_MAP = {
     'RichText': RichText,
@@ -23,6 +24,7 @@ const COMPONENT_MAP = {
     'Steps': Steps,
     'Prize': Prize,
     'CTA': CTA,
+    'ContactForm': ContactForm,
 };
 
 const BuilderSection = memo(({

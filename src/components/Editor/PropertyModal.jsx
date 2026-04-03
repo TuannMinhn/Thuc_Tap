@@ -16,8 +16,34 @@ const PropertyModal = () => {
     );
 
     const fileInputRef = React.useRef(null);
+    const bgImageInputRef = React.useRef(null);
 
     useLockBodyScroll(!!selectedComponent);
+
+    // Handle image upload from device
+    const handleImageUpload = (event, fieldName = 'backgroundImage') => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh (JPG, PNG, GIF, WebP)');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB');
+            return;
+        }
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            handleChange(fieldName, reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
 
     useEffect(() => {
         if (selectedComponent) {
@@ -38,6 +64,10 @@ const PropertyModal = () => {
                     }));
                 }
                 setFormData(initData);
+            } else if (selectedComponent.type === 'FooterColumn') {
+                // FooterColumn: extract nested data property
+                const columnData = defaultData.data || defaultData;
+                setFormData(columnData);
             } else {
                 setFormData(defaultData);
             }
@@ -120,7 +150,23 @@ const PropertyModal = () => {
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
                 <div className="flex items-center justify-between p-4 border-b flex-none">
-                    <h3 className="font-bold text-lg">Chỉnh sửa {selectedComponent.type === 'FooterColumn' ? `Cột Footer: ${selectedComponent.data.type}` : selectedComponent.type}</h3>
+                    <div className="flex items-center gap-3">
+                        {selectedComponent.type === 'FooterColumn' && (
+                            <button
+                                onClick={() => {
+                                    // Go back to Footer settings
+                                    setSelectedComponent({ type: 'Footer', data: config.footer || {} });
+                                }}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                title="Quay lại Footer"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                </svg>
+                            </button>
+                        )}
+                        <h3 className="font-bold text-lg">Chỉnh sửa {selectedComponent.type === 'FooterColumn' ? `Cột Footer: ${selectedComponent.data.type}` : selectedComponent.type}</h3>
+                    </div>
                     <button onClick={() => setSelectedComponent(null)} className="p-1 hover:bg-gray-100 rounded-full">
                         <X size={20} />
                     </button>
@@ -306,6 +352,20 @@ const PropertyModal = () => {
                         if (selectedComponent.type === 'Header') {
                             return (
                                 <div className="space-y-6">
+                                    {/* Visibility Toggle */}
+                                    <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                        <input
+                                            type="checkbox"
+                                            id="showHeader"
+                                            checked={formData.showHeader !== false}
+                                            onChange={(e) => handleChange('showHeader', e.target.checked)}
+                                            className="w-5 h-5 cursor-pointer accent-blue-600"
+                                        />
+                                        <label htmlFor="showHeader" className="cursor-pointer font-semibold text-gray-700 select-none">
+                                            Hiển thị Header
+                                        </label>
+                                    </div>
+
                                     {/* Branding Section */}
                                     <div className="space-y-4">
                                         <h4 className="font-semibold text-gray-700 mb-3 border-b pb-2">Thương hiệu</h4>
@@ -338,7 +398,7 @@ const PropertyModal = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => document.getElementById('header-logo-upload').click()}
-                                                    className="p-2 border rounded hover:bg-blue-50 text-blue-600 hover:border-blue-300 transition-colors"
+                                                    className="p-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors border border-blue-200"
                                                     title="Tải ảnh lên"
                                                 >
                                                     <Upload size={20} />
@@ -516,13 +576,72 @@ const PropertyModal = () => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Ảnh nền (Background Image)</label>
-                                            <input
-                                                type="text"
-                                                value={formData.backgroundImage || ''}
-                                                onChange={(e) => handleChange('backgroundImage', e.target.value)}
-                                                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
-                                                placeholder="https://... (Sẽ đè lên màu nền)"
-                                            />
+                                            
+                                            {/* URL Input with Upload Icon */}
+                                            <div className="flex gap-2 mb-2">
+                                                <input
+                                                    type="text"
+                                                    value={formData.backgroundImage || ''}
+                                                    onChange={(e) => handleChange('backgroundImage', e.target.value)}
+                                                    className="flex-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                                                    placeholder="https://... hoặc tải ảnh từ thiết bị"
+                                                />
+                                                
+                                                {/* Upload Icon Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => bgImageInputRef.current?.click()}
+                                                    className="p-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors border border-blue-200"
+                                                    title="Tải ảnh từ thiết bị"
+                                                >
+                                                    <Upload size={20} />
+                                                </button>
+                                                
+                                                {/* Hidden File Input */}
+                                                <input
+                                                    ref={bgImageInputRef}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleImageUpload(e, 'backgroundImage')}
+                                                    className="hidden"
+                                                />
+                                                
+                                                {/* Clear Button */}
+                                                {formData.backgroundImage && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleChange('backgroundImage', '')}
+                                                        className="p-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
+                                                        title="Xóa ảnh nền"
+                                                    >
+                                                        <X size={20} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Preview */}
+                                            {formData.backgroundImage && (
+                                                <div className="mt-2 relative">
+                                                    <div className="text-xs text-gray-500 mb-1">Preview:</div>
+                                                    <div className="relative h-32 rounded-md overflow-hidden border border-gray-300">
+                                                        <img 
+                                                            src={formData.backgroundImage} 
+                                                            alt="Background preview"
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => {
+                                                                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EError%3C/text%3E%3C/svg%3E';
+                                                            }}
+                                                        />
+                                                        <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                                            {formData.backgroundImage.startsWith('data:') ? 'Uploaded' : 'URL'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                Hỗ trợ: JPG, PNG, GIF, WebP (tối đa 5MB)
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -547,46 +666,115 @@ const PropertyModal = () => {
                                         </label>
                                     </div>
 
+                                    {/* Dividers Toggle */}
+                                    <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                        <input
+                                            type="checkbox"
+                                            id="showDividers"
+                                            checked={formData.showDividers === true}
+                                            onChange={(e) => handleChange('showDividers', e.target.checked)}
+                                            className="w-5 h-5 cursor-pointer accent-blue-600"
+                                        />
+                                        <label htmlFor="showDividers" className="cursor-pointer font-semibold text-gray-700 select-none">
+                                            Hiển thị đường kẻ ngăn cách
+                                        </label>
+                                    </div>
+
                                     {/* Column Management */}
                                     <div>
-                                        <h4 className="font-semibold text-gray-700 mb-3 border-b pb-2">Quản lý Cột ({formData.columns?.length || 0})</h4>
+                                        <h4 className="font-semibold text-gray-700 mb-3 border-b pb-2">
+                                            Cột điều hướng ({formData.columns?.length || 0})
+                                        </h4>
+                                        <p className="text-xs text-gray-500 mb-3">
+                                            Mỗi cột có thể được gán vào dòng bất kỳ. Các cột cùng dòng sẽ hiển thị cạnh nhau.
+                                        </p>
                                         <div className="space-y-2 mb-3">
-                                            {(formData.columns || []).map((col, idx) => (
-                                                <div key={idx} className="flex items-center justify-between bg-white p-2 border rounded shadow-sm">
-                                                    <span className="font-medium text-sm truncate max-w-[200px]">
-                                                        {col.data?.title || `Cột ${idx + 1}`}
-                                                    </span>
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            onClick={() => {
-                                                                // Switch to editing this column
-                                                                setSelectedComponent({ type: 'FooterColumn', data: col, index: idx });
-                                                            }}
-                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
-                                                            title="Sửa nội dung"
-                                                        >
-                                                            <Edit size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                const newCols = [...(formData.columns || [])];
-                                                                newCols.splice(idx, 1);
-                                                                handleChange('columns', newCols);
-                                                            }}
-                                                            className="p-1.5 text-red-500 hover:bg-red-50 rounded"
-                                                            title="Xóa cột này"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
+                                            {(formData.columns || [])
+                                                .map((col, idx) => ({ ...col, originalIndex: idx }))
+                                                .sort((a, b) => {
+                                                    // Sort by row number first, then by order within row
+                                                    const rowA = a.rowNumber || 1;
+                                                    const rowB = b.rowNumber || 1;
+                                                    if (rowA !== rowB) {
+                                                        return rowA - rowB;
+                                                    }
+                                                    const orderA = a.order || 0;
+                                                    const orderB = b.order || 0;
+                                                    return orderA - orderB;
+                                                })
+                                                .map((col) => {
+                                                    const idx = col.originalIndex;
+                                                    return (
+                                                <div key={idx} className="bg-white p-2 border rounded shadow-sm">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="font-medium text-sm truncate max-w-[150px]">
+                                                            {col.data?.title || `Cột ${idx + 1}`}
+                                                        </span>
+                                                        <div className="flex gap-2 items-center">
+                                                            {/* Order Number Input */}
+                                                            <div className="flex items-center gap-1">
+                                                                <label className="text-xs text-gray-600">Thứ tự:</label>
+                                                                <input
+                                                                    type="number"
+                                                                    min="1"
+                                                                    value={col.order || idx + 1}
+                                                                    onChange={(e) => {
+                                                                        const newCols = [...(formData.columns || [])];
+                                                                        newCols[idx] = { ...newCols[idx], order: parseInt(e.target.value) || 1 };
+                                                                        handleChange('columns', newCols);
+                                                                    }}
+                                                                    className="w-16 px-2 py-1 border rounded text-xs"
+                                                                />
+                                                            </div>
+                                                            {/* Row Number Selector */}
+                                                            <div className="flex items-center gap-1">
+                                                                <label className="text-xs text-gray-600">Dòng:</label>
+                                                                <select
+                                                                    value={col.rowNumber || 1}
+                                                                    onChange={(e) => {
+                                                                        const newCols = [...(formData.columns || [])];
+                                                                        newCols[idx] = { ...newCols[idx], rowNumber: parseInt(e.target.value) };
+                                                                        handleChange('columns', newCols);
+                                                                    }}
+                                                                    className="px-2 py-1 border rounded text-xs"
+                                                                >
+                                                                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                                                                        <option key={num} value={num}>Dòng {num}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedComponent({ type: 'FooterColumn', data: col, index: idx });
+                                                                }}
+                                                                className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                                                                title="Sửa nội dung"
+                                                            >
+                                                                <Edit size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const newCols = [...(formData.columns || [])];
+                                                                    newCols.splice(idx, 1);
+                                                                    handleChange('columns', newCols);
+                                                                }}
+                                                                className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                                                                title="Xóa cột này"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            ))}
+                                                    );
+                                                })}
                                         </div>
                                         <button
                                             onClick={() => {
                                                 const newCol = {
                                                     type: 'FooterColumn',
-                                                    data: { title: 'Cột Mới', content: 'Nội dung...' }
+                                                    data: { title: 'Cột Mới', content: '' },
+                                                    rowNumber: 1
                                                 };
                                                 handleChange('columns', [...(formData.columns || []), newCol]);
                                             }}
@@ -594,49 +782,144 @@ const PropertyModal = () => {
                                         >
                                             <Plus size={16} /> Thêm cột mới
                                         </button>
+                                        {(() => {
+                                            const rowCounts = {};
+                                            (formData.columns || []).forEach(col => {
+                                                const row = col.rowNumber || 1;
+                                                rowCounts[row] = (rowCounts[row] || 0) + 1;
+                                            });
+                                            const totalRows = Object.keys(rowCounts).length;
+                                            return totalRows > 0 && (
+                                                <div className="text-xs text-blue-600 mt-2 flex items-start gap-1">
+                                                    <Info size={14} className="mt-0.5" />
+                                                    <div>
+                                                        Có {totalRows} dòng: {Object.entries(rowCounts).sort((a, b) => a[0] - b[0]).map(([row, count]) => `Dòng ${row} (${count} cột)`).join(', ')}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
 
-                                    {/* Copyright Text */}
+                                    <hr className="border-gray-200" />
+
+                                    {/* Sub-Footer: Bottom Links */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Dòng bản quyền (Copyright)</label>
-                                        <input
-                                            type="text"
-                                            value={formData.copyrightText || ''}
-                                            onChange={(e) => handleChange('copyrightText', e.target.value)}
-                                            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
-                                            placeholder="© 2026..."
-                                        />
+                                        <h4 className="font-semibold text-gray-700 mb-3 border-b pb-2">
+                                            Sub-Footer (Thanh dưới cùng)
+                                        </h4>
+                                        <p className="text-xs text-gray-500 mb-3">
+                                            Liên kết phụ như Privacy Policy, Terms of Service, v.v.
+                                        </p>
+                                        
+                                        {/* Copyright Text */}
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Dòng bản quyền (Copyright)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.copyrightText || ''}
+                                                onChange={(e) => handleChange('copyrightText', e.target.value)}
+                                                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                                placeholder="© 2026 My Website. All rights reserved."
+                                            />
+                                        </div>
+
+                                        {/* Bottom Links */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Liên kết phụ</label>
+                                            {(formData.bottomLinks || []).map((link, idx) => (
+                                                <div key={idx} className="flex gap-2 mb-2">
+                                                    <input
+                                                        type="text"
+                                                        value={link.label}
+                                                        onChange={(e) => {
+                                                            const newLinks = [...(formData.bottomLinks || [])];
+                                                            newLinks[idx].label = e.target.value;
+                                                            handleChange('bottomLinks', newLinks);
+                                                        }}
+                                                        className="w-1/3 p-2 border rounded text-sm"
+                                                        placeholder="Privacy Policy"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        value={link.link}
+                                                        onChange={(e) => {
+                                                            const newLinks = [...(formData.bottomLinks || [])];
+                                                            newLinks[idx].link = e.target.value;
+                                                            handleChange('bottomLinks', newLinks);
+                                                        }}
+                                                        className="flex-1 p-2 border rounded text-sm"
+                                                        placeholder="/privacy"
+                                                    />
+                                                    <button
+                                                        onClick={() => {
+                                                            const newLinks = (formData.bottomLinks || []).filter((_, i) => i !== idx);
+                                                            handleChange('bottomLinks', newLinks);
+                                                        }}
+                                                        className="p-2 text-red-500 hover:bg-red-50 rounded"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button
+                                                onClick={() => handleChange('bottomLinks', [...(formData.bottomLinks || []), { label: 'Privacy Policy', link: '/privacy' }])}
+                                                className="mt-2 flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                            >
+                                                <Plus size={16} /> Thêm liên kết
+                                            </button>
+                                        </div>
                                     </div>
+
+                                    <hr className="border-gray-200" />
 
                                     {/* Colors */}
                                     <div>
                                         <h4 className="font-semibold text-gray-700 mb-3 border-b pb-2">Màu sắc</h4>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Màu nền (Class CSS)</label>
-                                                <select
-                                                    value={formData.backgroundColor || 'bg-slate-900'}
-                                                    onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                                                    className="w-full p-2 border rounded-md"
-                                                >
-                                                    <option value="bg-slate-900">Slate 900 (Dark)</option>
-                                                    <option value="bg-gray-900">Gray 900</option>
-                                                    <option value="bg-blue-900">Blue 900</option>
-                                                    <option value="bg-black">Black</option>
-                                                    <option value="bg-white">White</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Màu chữ (Class CSS)</label>
-                                                <select
-                                                    value={formData.textColor || 'text-white'}
-                                                    onChange={(e) => handleChange('textColor', e.target.value)}
-                                                    className="w-full p-2 border rounded-md"
-                                                >
-                                                    <option value="text-white">White</option>
-                                                    <option value="text-gray-200">Gray 200</option>
-                                                    <option value="text-gray-900">Dark (for light bg)</option>
-                                                </select>
+                                        <p className="text-xs text-gray-500 mb-3">
+                                            💡 Màu chữ sẽ tự động điều chỉnh dựa trên độ sáng của màu nền
+                                        </p>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Màu nền</label>
+                                            
+                                            {/* Color Picker */}
+                                            <div className="flex items-center gap-3">
+                                                <input
+                                                    type="color"
+                                                    value={(() => {
+                                                        // Convert Tailwind class to hex color
+                                                        const colorMap = {
+                                                            'bg-black': '#000000',
+                                                            'bg-slate-900': '#0f172a',
+                                                            'bg-slate-800': '#1e293b',
+                                                            'bg-gray-900': '#111827',
+                                                            'bg-gray-800': '#1f2937',
+                                                            'bg-blue-900': '#1e3a8a',
+                                                            'bg-blue-800': '#1e40af',
+                                                            'bg-gray-100': '#f3f4f6',
+                                                            'bg-gray-50': '#f9fafb',
+                                                            'bg-slate-100': '#f1f5f9',
+                                                            'bg-slate-50': '#f8fafc',
+                                                            'bg-blue-100': '#dbeafe',
+                                                            'bg-blue-50': '#eff6ff',
+                                                            'bg-white': '#ffffff'
+                                                        };
+                                                        return colorMap[formData.backgroundColor] || '#0f172a';
+                                                    })()}
+                                                    onChange={(e) => {
+                                                        // Store as custom color
+                                                        handleChange('backgroundColor', e.target.value);
+                                                    }}
+                                                    className="w-20 h-20 rounded-lg border-2 border-gray-300 cursor-pointer"
+                                                    title="Chọn màu nền"
+                                                />
+                                                <div className="flex-1">
+                                                    <div className="text-sm font-medium text-gray-700 mb-1">
+                                                        {formData.backgroundColor?.startsWith('#') ? 'Màu tùy chỉnh' : 'Màu Tailwind'}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500 font-mono bg-gray-50 px-2 py-1 rounded">
+                                                        {formData.backgroundColor || 'bg-slate-900'}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -967,6 +1250,141 @@ const PropertyModal = () => {
                             );
                         }
 
+                        // ContactForm Editor
+                        if (selectedComponent.type === 'ContactForm') {
+                            return (
+                                <div className="space-y-6">
+                                    {/* Block Title & Subtitle */}
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Tiêu đề Block</label>
+                                            <input
+                                                type="text"
+                                                value={formData.blockTitle || ''}
+                                                onChange={(e) => handleChange('blockTitle', e.target.value)}
+                                                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="Liên hệ với chúng tôi"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Phụ đề</label>
+                                            <input
+                                                type="text"
+                                                value={formData.blockSubtitle || ''}
+                                                onChange={(e) => handleChange('blockSubtitle', e.target.value)}
+                                                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="Gửi tin nhắn và chúng tôi sẽ phản hồi sớm nhất"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Show Contact Info Toggle */}
+                                    <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border">
+                                        <input
+                                            type="checkbox"
+                                            id="showContactInfo"
+                                            checked={formData.showContactInfo !== false}
+                                            onChange={(e) => handleChange('showContactInfo', e.target.checked)}
+                                            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                                        />
+                                        <label htmlFor="showContactInfo" className="cursor-pointer font-semibold text-gray-700 select-none">
+                                            Hiển thị thông tin liên hệ
+                                        </label>
+                                    </div>
+
+                                    {/* Contact Info */}
+                                    {formData.showContactInfo !== false && (
+                                        <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                            <h4 className="font-bold text-gray-800">Thông tin liên hệ</h4>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                                <input
+                                                    type="email"
+                                                    value={formData.contactInfo?.email || ''}
+                                                    onChange={(e) => handleChange('contactInfo', { ...formData.contactInfo, email: e.target.value })}
+                                                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                                                    placeholder="contact@example.com"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                                                <input
+                                                    type="tel"
+                                                    value={formData.contactInfo?.phone || ''}
+                                                    onChange={(e) => handleChange('contactInfo', { ...formData.contactInfo, phone: e.target.value })}
+                                                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                                                    placeholder="(+84) 123 456 789"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
+                                                <textarea
+                                                    value={formData.contactInfo?.address || ''}
+                                                    onChange={(e) => handleChange('contactInfo', { ...formData.contactInfo, address: e.target.value })}
+                                                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                                                    rows="2"
+                                                    placeholder="123 Đường ABC, Quận 1, TP.HCM"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Form Fields Selection */}
+                                    <div className="space-y-3">
+                                        <h4 className="font-bold text-gray-800">Các trường trong form</h4>
+                                        <div className="space-y-2">
+                                            {['name', 'email', 'phone', 'subject', 'message'].map(field => {
+                                                const labels = {
+                                                    name: 'Họ và tên',
+                                                    email: 'Email',
+                                                    phone: 'Số điện thoại',
+                                                    subject: 'Tiêu đề',
+                                                    message: 'Nội dung'
+                                                };
+                                                const currentFields = formData.formFields || ['name', 'email', 'phone', 'message'];
+                                                const isChecked = currentFields.includes(field);
+                                                
+                                                return (
+                                                    <label key={field} className="flex items-center gap-2 cursor-pointer select-none p-2 hover:bg-gray-50 rounded">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isChecked}
+                                                            onChange={(e) => {
+                                                                const newFields = e.target.checked
+                                                                    ? [...currentFields, field]
+                                                                    : currentFields.filter(f => f !== field);
+                                                                handleChange('formFields', newFields);
+                                                            }}
+                                                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                                        />
+                                                        <span className="text-sm text-gray-700">{labels[field]}</span>
+                                                        {(field === 'name' || field === 'email' || field === 'message') && (
+                                                            <span className="text-xs text-red-500">*</span>
+                                                        )}
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                        <p className="text-xs text-gray-500">* Trường bắt buộc</p>
+                                    </div>
+
+                                    {/* Background Color */}
+                                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
+                                        <span className="text-sm font-medium text-gray-700">Màu nền:</span>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.backgroundColor || '#f9fafb'}
+                                                onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                                                className="w-8 h-8 p-0.5 border rounded cursor-pointer"
+                                                title="Chọn màu nền"
+                                            />
+                                            <span className="text-xs text-gray-500">{formData.backgroundColor || '#f9fafb'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
 
                         // Timeline Editor
                         if (selectedComponent.type === 'Timeline') {
@@ -1076,7 +1494,7 @@ const PropertyModal = () => {
                                                 />
                                                 <button
                                                     onClick={() => document.getElementById(`timeline-image-${index}`).click()}
-                                                    className="p-2 bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
+                                                    className="p-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors border border-blue-200"
                                                     title="Tải ảnh lên"
                                                 >
                                                     <Upload size={16} />
@@ -1627,7 +2045,7 @@ const PropertyModal = () => {
                                             />
                                             <button
                                                 onClick={() => fileInputRef.current.click()}
-                                                className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                                                className="p-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors border border-blue-200"
                                                 title="Tải ảnh/video từ máy"
                                             >
                                                 <Upload size={18} />

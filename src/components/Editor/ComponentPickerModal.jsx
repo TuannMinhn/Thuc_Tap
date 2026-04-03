@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Type, Image, X, Video, Hash, Clock, HelpCircle, ListOrdered, Award, ChevronDown, ChevronUp, LayoutTemplate, MousePointerClick } from 'lucide-react';
+import { Type, Image, X, Video, Hash, Clock, HelpCircle, ListOrdered, Award, ChevronDown, ChevronUp, LayoutTemplate, MousePointerClick, Mail } from 'lucide-react';
 import useLockBodyScroll from '../../hooks/useLockBodyScroll';
 
 const COMPONENT_TYPES = [
@@ -10,47 +10,48 @@ const COMPONENT_TYPES = [
         description: 'Block nền tảng: Tiêu đề, đoạn văn',
         color: 'bg-blue-50 text-blue-600',
         defaultData: {
-            title: 'Tiêu đề section hấp dẫn',
-            content: 'Đoạn văn ngắn gọn (2-3 câu) mô tả nội dung chính của phần này. Hãy viết xúc tích, đi thẳng vào vấn đề và mang lại giá trị cho người đọc.'
+            title: '',
+            subtitle: '',
+            content: '',
+            align: 'text-left'
         },
         presets: [
             {
-                label: 'Tiêu Đề Mục',
-                description: 'Dùng để ngăn cách các phần nội dung lớn.',
+                label: 'Chỉ Tiêu Đề',
+                description: 'Chỉ hiển thị tiêu đề lớn, không có phụ đề hay nội dung.',
                 data: {
-                    title: 'Ví dụ: Tính năng chính',
-                    // align default is left, but we can omit if component handles it. Keeping it clean.
+                    title: 'Tiêu đề chính',
                 }
             },
             {
-                label: 'Tiêu Đề + Mô Tả',
-                description: 'Cấu trúc tiêu chuẩn với tiêu đề và đoạn văn mô tả chi tiết.',
+                label: 'Chỉ Phụ Đề',
+                description: 'Chỉ hiển thị phụ đề nhỏ, không có tiêu đề chính.',
                 data: {
-                    title: 'Theo dõi tiến độ học tập',
-                    content: 'Quản lý tiến độ môn học và lớp học theo thời gian thực',
+                    subtitle: 'Dòng phụ đề mô tả ngắn gọn',
+                }
+            },
+            {
+                label: 'Chỉ Nội Dung',
+                description: 'Chỉ có đoạn văn bản, không có tiêu đề.',
+                data: {
+                    content: 'Đoạn văn bản mô tả chi tiết nội dung. Có thể dài hoặc ngắn tùy nhu cầu.',
                 }
             },
             {
                 label: 'Tiêu Đề + Phụ Đề',
-                description: 'Nhấn mạnh tiêu đề chính kèm dòng phụ chú nhỏ.',
+                description: 'Kết hợp tiêu đề chính và phụ đề, không có nội dung.',
                 data: {
-                    title: 'Quản lý tiến độ học tập thông minh',
-                    subtitle: 'Mọi dữ liệu học tập trên một dashboard duy nhất',
+                    title: 'Tiêu đề chính',
+                    subtitle: 'Phụ đề bổ sung',
                 }
             },
             {
-                label: 'Giới Thiệu Căn Giữa',
-                description: 'Thu hút sự chú ý, tối ưu cho lời chào hoặc thông điệp chính.',
+                label: 'Căn Giữa',
+                description: 'Nội dung căn giữa, phù hợp cho intro hoặc hero section.',
                 data: {
-                    content: 'Nền tảng giúp nhà trường theo dõi và cải thiện tiến độ học tập.',
-                    align: 'text-center' // Must force center alignment here
-                }
-            },
-            {
-                label: 'Đoạn Văn Đơn',
-                description: 'Đoạn văn đơn thuần, thích hợp cho ghi chú hoặc footer.',
-                data: {
-                    content: 'Hệ thống tự động tổng hợp dữ liệu và hiển thị trực quan.'
+                    title: 'Tiêu đề căn giữa',
+                    content: 'Nội dung căn giữa trang.',
+                    align: 'text-center'
                 }
             }
         ]
@@ -62,25 +63,42 @@ const COMPONENT_TYPES = [
         description: 'Dữ liệu tổng, con số ấn tượng',
         color: 'bg-yellow-50 text-yellow-600',
         defaultData: {
-            items: [
-                { value: '1M+', label: 'Người dùng hoạt động' },
-                { value: '4.9', label: 'Xếp hạng sao' },
-                { value: '24/7', label: 'Hỗ trợ kỹ thuật' }
-            ]
+            items: []
         },
         presets: [
             {
-                label: 'Số Liệu Nổi Bật (1)',
-                description: 'Tập trung vào một con số ấn tượng nhất.',
+                label: '1 Số Liệu',
+                description: 'Chỉ hiển thị một con số ấn tượng duy nhất.',
                 data: {
                     items: [
-                        { value: 'Top #1', label: 'Thị phần Việt Nam', description: 'Được bình chọn bởi người dùng 2024.' }
+                        { value: '1M+', label: 'Người dùng' }
                     ]
                 }
             },
             {
-                label: 'Thống Kê Cơ Bản',
-                description: 'Hiển thị các con số thống kê dạng lưới tự động (3-4 cột).',
+                label: '2 Số Liệu',
+                description: 'Hiển thị 2 con số song song.',
+                data: {
+                    items: [
+                        { value: '10K+', label: 'Khách hàng' },
+                        { value: '4.9/5', label: 'Đánh giá' }
+                    ]
+                }
+            },
+            {
+                label: '3 Số Liệu',
+                description: 'Hiển thị 3 con số dạng lưới.',
+                data: {
+                    items: [
+                        { value: '500+', label: 'Dự án' },
+                        { value: '98%', label: 'Hài lòng' },
+                        { value: '24/7', label: 'Hỗ trợ' }
+                    ]
+                }
+            },
+            {
+                label: '4 Số Liệu',
+                description: 'Hiển thị 4 con số dạng lưới đầy đủ.',
                 data: {
                     items: [
                         { value: '10K', label: 'Học viên' },
@@ -91,12 +109,12 @@ const COMPONENT_TYPES = [
                 }
             },
             {
-                label: 'Số Liệu + Mô Tả',
-                description: 'Số liệu kèm mô tả chi tiết.',
+                label: 'Có Mô Tả',
+                description: 'Số liệu kèm mô tả chi tiết bên dưới.',
                 data: {
                     items: [
-                        { value: '24/7', label: 'Hỗ trợ', description: 'Đội ngũ kỹ thuật trực chiến 24/7.' },
-                        { value: '100%', label: 'Bảo mật', description: 'Mã hóa dữ liệu đầu cuối an toàn.' }
+                        { value: '24/7', label: 'Hỗ trợ', description: 'Đội ngũ kỹ thuật trực chiến 24/7' },
+                        { value: '100%', label: 'Bảo mật', description: 'Mã hóa dữ liệu đầu cuối' }
                     ]
                 }
             }
@@ -108,41 +126,59 @@ const COMPONENT_TYPES = [
         icon: Image,
         description: 'Ảnh đơn, banner quảng cáo',
         color: 'bg-purple-50 text-purple-600',
-        defaultData: { src: '', alt: 'Image', aspectRatio: 'aspect-video', caption: 'Mô tả ngắn về hình ảnh nếu cần' },
+        defaultData: { 
+            src: '', 
+            alt: 'Image', 
+            aspectRatio: 'aspect-video'
+        },
         presets: [
             {
-                label: 'Ảnh Tràn Viền',
-                description: 'Ảnh rộng hết màn hình, không có chú thích.',
-                data: {
-                    src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200',
-                    alt: 'Banner',
-                    aspectRatio: 'aspect-video',
-                    fullWidth: true
-                    // No caption
-                }
-            },
-            {
-                label: 'Ảnh Bìa (Hero)',
-                description: 'Ảnh khổ rộng (21:9) làm điểm nhấn đầu trang.',
-                data: {
-                    src: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=1200',
-                    alt: 'Hero',
-                    aspectRatio: 'aspect-[21/9]',
-                    fullWidth: true
-                    // No caption
-                }
-            }, // Added standard option for completeness if user wants caption
-            {
-                label: 'Ảnh Minh Họa',
-                description: 'Ảnh trong khung tiêu chuẩn kèm chú thích.',
+                label: 'Ảnh Vuông',
+                description: 'Ảnh tỷ lệ 1:1, phù hợp cho avatar hoặc logo.',
                 data: {
                     src: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800',
-                    alt: 'Minh họa',
-                    aspectRatio: 'aspect-video',
-                    fullWidth: false,
-                    caption: 'Mô tả chi tiết cho hình ảnh minh họa.'
+                    alt: 'Square image',
+                    aspectRatio: 'aspect-square'
                 }
             },
+            {
+                label: 'Ảnh Ngang (16:9)',
+                description: 'Ảnh tỷ lệ 16:9, chuẩn video/banner.',
+                data: {
+                    src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200',
+                    alt: 'Landscape image',
+                    aspectRatio: 'aspect-video'
+                }
+            },
+            {
+                label: 'Ảnh Rộng (21:9)',
+                description: 'Ảnh siêu rộng, phù hợp cho hero banner.',
+                data: {
+                    src: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=1200',
+                    alt: 'Wide image',
+                    aspectRatio: 'aspect-[21/9]'
+                }
+            },
+            {
+                label: 'Ảnh Có Chú Thích',
+                description: 'Ảnh kèm caption mô tả bên dưới.',
+                data: {
+                    src: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800',
+                    alt: 'Image with caption',
+                    aspectRatio: 'aspect-video',
+                    caption: 'Mô tả chi tiết cho hình ảnh'
+                }
+            },
+            {
+                label: 'Ảnh Tràn Viền',
+                description: 'Ảnh full-width không padding, tràn hết màn hình.',
+                data: {
+                    src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200',
+                    alt: 'Full width image',
+                    aspectRatio: 'aspect-video',
+                    fullWidth: true
+                }
+            }
         ]
     },
     {
@@ -151,16 +187,18 @@ const COMPONENT_TYPES = [
         icon: Video,
         description: 'Nhúng video Youtube/Vimeo',
         color: 'bg-red-50 text-red-600',
-        defaultData: { type: 'video', src: '', alt: 'Video', aspectRatio: 'aspect-video', caption: 'Video giới thiệu tổng quan' },
+        defaultData: { 
+            type: 'video', 
+            src: '', 
+            alt: 'Video'
+        },
         presets: [
             {
-                label: 'Video Player (Cơ bản)',
-                description: 'Video có trình điều khiển, người dùng tự bấm play.',
+                label: 'Video Cơ Bản',
+                description: 'Video có controls, người dùng tự bấm play.',
                 data: {
                     type: 'video',
                     src: '',
-                    align: 'center',
-                    caption: 'Xem video để hiểu rõ hơn về chúng tôi',
                     autoPlay: false,
                     muted: false,
                     loop: false,
@@ -168,19 +206,27 @@ const COMPONENT_TYPES = [
                 }
             },
             {
-                label: 'Video Autoplay (Giống GIF)',
-                description: 'Video tự chạy, không tiếng, lặp lại (Dùng làm nền/hiệu ứng).',
+                label: 'Video Autoplay',
+                description: 'Video tự động phát, không tiếng, lặp lại (như GIF).',
                 data: {
                     type: 'video',
-                    src: 'https://cdn.coverr.co/videos/coverr-typing-on-computer-keyboard-5503/1080p.mp4',
-                    align: 'center',
+                    src: '',
                     autoPlay: true,
                     muted: true,
                     loop: true,
-                    controls: false,
-                    caption: ''
+                    controls: false
                 }
             },
+            {
+                label: 'Video Có Caption',
+                description: 'Video kèm chú thích mô tả bên dưới.',
+                data: {
+                    type: 'video',
+                    src: '',
+                    controls: true,
+                    caption: 'Mô tả video'
+                }
+            }
         ]
     },
     {
@@ -189,51 +235,42 @@ const COMPONENT_TYPES = [
         icon: Clock,
         description: 'Lịch trình, mốc thời gian',
         color: 'bg-green-50 text-green-600',
-        defaultData: { items: [{ date: '2024', title: 'Khởi đầu', description: 'Giai đoạn xây dựng nền móng.' }] },
+        defaultData: { 
+            items: []
+        },
         presets: [
             {
-                label: 'Lịch sử phát triển',
-                description: 'Kể lại hành trình hình thành và phát triển theo thời gian.',
+                label: '3 Mốc Thời Gian',
+                description: 'Timeline ngắn với 3 mốc quan trọng.',
                 data: {
                     items: [
-                        { year: '2022', title: 'Khởi tạo ý tưởng', description: 'Hình thành nhu cầu xây dựng hệ thống quản lý tiến độ học tập.' },
-                        { year: '2023', title: 'Phát triển hệ thống', description: 'Xây dựng dashboard và thử nghiệm nội bộ.' },
-                        { year: '2024', title: 'Triển khai thực tế', description: 'Áp dụng cho nhiều lớp và theo dõi theo năm học.' }
+                        { date: '2022', title: 'Khởi đầu', description: 'Bắt đầu dự án' },
+                        { date: '2023', title: 'Phát triển', description: 'Mở rộng quy mô' },
+                        { date: '2024', title: 'Hiện tại', description: 'Vị trí hàng đầu' }
                     ]
                 }
             },
             {
-                label: 'Lộ trình triển khai',
-                description: 'Roadmap kế hoạch các bước thực hiện trong tương lai.',
+                label: '5 Mốc Thời Gian',
+                description: 'Timeline chi tiết với 5 mốc phát triển.',
                 data: {
                     items: [
-                        { step: 'Bước 1', title: 'Thu thập dữ liệu', goal: 'Chuẩn hóa dữ liệu môn học và lớp học.' },
-                        { step: 'Bước 2', title: 'Phân tích tiến độ', goal: 'Tính toán tỷ lệ hoàn thành và cảnh báo trễ.' },
-                        { step: 'Bước 3', title: 'Hiển thị dashboard', goal: 'Trực quan hóa dữ liệu theo năm học.' },
-                        { step: 'Bước 4', title: 'Đánh giá & điều chỉnh', goal: 'Hỗ trợ quản lý can thiệp sớm.' },
-                        { step: 'Bước 5', title: 'Báo cáo tổng hợp', goal: 'Xuất báo cáo cho phòng đào tạo.' }
+                        { date: '2020', title: 'Ý tưởng', description: 'Hình thành ý tưởng ban đầu' },
+                        { date: '2021', title: 'Thành lập', description: 'Thành lập công ty' },
+                        { date: '2022', title: 'Sản phẩm đầu tiên', description: 'Ra mắt sản phẩm' },
+                        { date: '2023', title: 'Mở rộng', description: 'Mở chi nhánh mới' },
+                        { date: '2024', title: 'Dẫn đầu', description: 'Top 1 thị trường' }
                     ]
                 }
             },
             {
-                label: 'Quy trình hoạt động',
-                description: 'Giải thích cách hệ thống hoặc dịch vụ vận hành.',
+                label: 'Quy Trình (Steps)',
+                description: 'Hiển thị các bước thực hiện tuần tự.',
                 data: {
                     items: [
-                        { action: 'Thu thập dữ liệu', description: 'Ghi nhận tiến độ học tập từ giảng viên.' },
-                        { action: 'Xử lý & phân tích', description: 'Tự động tính toán trạng thái tiến độ.' },
-                        { action: 'Cảnh báo', description: 'Phát hiện lớp hoặc môn trễ tiến độ.' },
-                        { action: 'Theo dõi & điều chỉnh', description: 'Quản lý can thiệp kịp thời.' }
-                    ]
-                }
-            },
-            {
-                label: 'Trước và sau khi sử dụng',
-                description: 'So sánh hiệu quả để thuyết phục khách hàng.',
-                data: {
-                    items: [
-                        { phase: 'Trước khi sử dụng', status: 'Dữ liệu rời rạc, khó theo dõi tiến độ.' },
-                        { phase: 'Sau khi sử dụng', status: 'Tiến độ minh bạch, phát hiện trễ sớm.' }
+                        { step: 'Bước 1', title: 'Đăng ký', description: 'Tạo tài khoản' },
+                        { step: 'Bước 2', title: 'Xác thực', description: 'Xác nhận email' },
+                        { step: 'Bước 3', title: 'Sử dụng', description: 'Bắt đầu trải nghiệm' }
                     ]
                 }
             }
@@ -245,23 +282,42 @@ const COMPONENT_TYPES = [
         icon: HelpCircle,
         description: 'Hỏi đáp, câu hỏi thường gặp',
         color: 'bg-orange-50 text-orange-600',
-        defaultData: { items: [{ question: 'Sản phẩm có bảo hành không?', answer: 'Có, chúng tôi bảo hành 12 tháng 1 đổi 1.' }] },
+        defaultData: { 
+            items: []
+        },
         presets: [
             {
-                label: '3 Câu (Cơ bản)',
-                description: 'Dạng danh sách ngắn gọn, phù hợp cho trang chủ hoặc landing page.',
+                label: '1 Câu Hỏi',
+                description: 'Chỉ một câu hỏi và câu trả lời.',
                 data: {
                     items: [
-                        { question: 'Làm thế nào để đăng ký tài khoản?', answer: 'Bạn nhấn nút Đăng ký ở góc phải và điền thông tin email.' },
-                        { question: 'Chi phí dịch vụ là bao nhiêu?', answer: 'Gói cơ bản bắt đầu từ 99k/tháng, xem chi tiết tại bảng giá.' },
-                        { question: 'Có hỗ trợ kỹ thuật cuối tuần không?', answer: 'Có, đội ngũ support làm việc 24/7 kể cả ngày lễ.' }
+                        { question: 'Sản phẩm có bảo hành không?', answer: 'Có, chúng tôi bảo hành 12 tháng.' }
                     ]
                 }
             },
             {
-                label: '5 Câu (Chi tiết)',
-                description: 'Danh sách mở rộng cho trang FAQ chi tiết hoặc sản phẩm phức tạp.',
-                data: { items: Array(5).fill({ question: 'Câu hỏi thường gặp?', answer: 'Câu trả lời giải đáp thắc mắc...' }) }
+                label: '3 Câu Hỏi',
+                description: 'Danh sách 3 câu hỏi phổ biến.',
+                data: {
+                    items: [
+                        { question: 'Làm thế nào để đăng ký?', answer: 'Nhấn nút Đăng ký và điền thông tin.' },
+                        { question: 'Chi phí là bao nhiêu?', answer: 'Gói cơ bản từ 99k/tháng.' },
+                        { question: 'Có hỗ trợ 24/7 không?', answer: 'Có, chúng tôi hỗ trợ 24/7.' }
+                    ]
+                }
+            },
+            {
+                label: '5 Câu Hỏi',
+                description: 'Danh sách đầy đủ 5 câu hỏi thường gặp.',
+                data: {
+                    items: [
+                        { question: 'Làm thế nào để đăng ký?', answer: 'Nhấn nút Đăng ký và điền thông tin.' },
+                        { question: 'Chi phí là bao nhiêu?', answer: 'Gói cơ bản từ 99k/tháng.' },
+                        { question: 'Có hỗ trợ 24/7 không?', answer: 'Có, chúng tôi hỗ trợ 24/7.' },
+                        { question: 'Có thể hủy bất cứ lúc nào?', answer: 'Có, không ràng buộc hợp đồng.' },
+                        { question: 'Có bảo mật dữ liệu không?', answer: 'Có, mã hóa SSL 256-bit.' }
+                    ]
+                }
             }
         ]
     },
@@ -271,28 +327,53 @@ const COMPONENT_TYPES = [
         icon: ListOrdered,
         description: 'Quy trình thực hiện',
         color: 'bg-cyan-50 text-cyan-600',
-        defaultData: { items: [{ step: '01', title: 'Tư vấn', description: 'Tiếp nhận yêu cầu từ khách hàng' }] },
+        defaultData: { 
+            items: []
+        },
         presets: [
             {
-                label: '3 Bước (Đơn giản)',
-                description: 'Quy trình 3 bước lặp lại phổ biến (Đăng ký -> Xác nhận -> Sử dụng).',
+                label: '2 Bước',
+                description: 'Quy trình đơn giản 2 bước.',
                 data: {
                     items: [
-                        { step: '01', title: 'Đăng ký', description: 'Điền form thông tin trực tuyến.' },
-                        { step: '02', title: 'Xác nhận', description: 'Nhân viên gọi điện xác nhận đơn hàng.' },
-                        { step: '03', title: 'Nhận hàng', description: 'Giao hàng tận nơi trong 24h.' }
+                        { step: '01', title: 'Đăng ký', description: 'Tạo tài khoản' },
+                        { step: '02', title: 'Sử dụng', description: 'Bắt đầu ngay' }
                     ]
                 }
             },
             {
-                label: '4 Bước (Quy trình)',
-                description: 'Quy trình chi tiết 4 bước cho dịch vụ hoặc thi công.',
+                label: '3 Bước',
+                description: 'Quy trình 3 bước phổ biến.',
                 data: {
                     items: [
-                        { step: '01', title: 'Khảo sát', description: 'Đánh giá hiện trạng mặt bằng.' },
-                        { step: '02', title: 'Thiết kế', description: 'Lên bản vẽ 3D chi tiết.' },
-                        { step: '03', title: 'Thi công', description: 'Triển khai lắp đặt nội thất.' },
-                        { step: '04', title: 'Bàn giao', description: 'Nghiệm thu và bảo hành.' }
+                        { step: '01', title: 'Đăng ký', description: 'Điền form thông tin' },
+                        { step: '02', title: 'Xác nhận', description: 'Xác nhận email' },
+                        { step: '03', title: 'Hoàn tất', description: 'Bắt đầu sử dụng' }
+                    ]
+                }
+            },
+            {
+                label: '4 Bước',
+                description: 'Quy trình chi tiết 4 bước.',
+                data: {
+                    items: [
+                        { step: '01', title: 'Khảo sát', description: 'Đánh giá nhu cầu' },
+                        { step: '02', title: 'Thiết kế', description: 'Lên phương án' },
+                        { step: '03', title: 'Triển khai', description: 'Thực hiện dự án' },
+                        { step: '04', title: 'Bàn giao', description: 'Nghiệm thu' }
+                    ]
+                }
+            },
+            {
+                label: '5 Bước',
+                description: 'Quy trình đầy đủ 5 bước.',
+                data: {
+                    items: [
+                        { step: '01', title: 'Tư vấn', description: 'Tiếp nhận yêu cầu' },
+                        { step: '02', title: 'Báo giá', description: 'Đưa ra phương án' },
+                        { step: '03', title: 'Ký hợp đồng', description: 'Thỏa thuận điều khoản' },
+                        { step: '04', title: 'Thực hiện', description: 'Triển khai dự án' },
+                        { step: '05', title: 'Bảo hành', description: 'Hỗ trợ sau bán' }
                     ]
                 }
             }
@@ -305,45 +386,60 @@ const COMPONENT_TYPES = [
         description: 'Giải thưởng cuộc thi, danh hiệu',
         color: 'bg-pink-50 text-pink-600',
         defaultData: {
-            items: [
-                { title: 'Giải nhất', description: 'Giải thưởng cao nhất cuộc thi', value: '3.000.000 VNĐ', highlight: true },
-                { title: 'Giải nhì', description: 'Giải thưởng hạng nhì', value: '2.000.000 VNĐ', highlight: true },
-                { title: 'Giải ba', description: 'Giải thưởng hạng ba', value: '1.000.000 VNĐ', highlight: true }
-            ]
+            items: []
         },
         presets: [
             {
-                label: 'Cuộc thi (Đầy đủ)',
-                description: 'Bảng giải thưởng đầy đủ cho cuộc thi với giải chính và giải phụ.',
+                label: 'Giải Nhất',
+                description: 'Chỉ hiển thị giải thưởng cao nhất.',
                 data: {
                     items: [
-                        { title: 'Giải nhất', description: 'Bao gồm tiền mặt, giấy khen và quà từ đối tác', value: '3.000.000 VNĐ', highlight: true },
-                        { title: 'Giải nhì', description: 'Bao gồm tiền mặt, giấy khen và quà từ đối tác', value: '2.000.000 VNĐ', highlight: true },
-                        { title: 'Giải ba', description: 'Bao gồm tiền mặt, giấy khen và quà từ đối tác', value: '1.000.000 VNĐ', highlight: true },
-                        { title: 'Giải khuyến khích', description: 'Bao gồm tiền mặt và giấy khen', value: '500.000 VNĐ', multiplier: '2x' },
-                        { title: 'Giải bình chọn', description: 'Bao gồm quà tặng và giấy khen', value: '500.000 VNĐ', multiplier: '3x' }
+                        { title: 'Giải Nhất', description: 'Giải thưởng cao nhất', value: '10.000.000 VNĐ', highlight: true }
                     ]
                 }
             },
             {
-                label: 'Top 3 (Nhất - Nhì - Ba)',
-                description: 'Chỉ hiển thị 3 giải thưởng chính, gọn gàng.',
+                label: 'Top 3',
+                description: 'Hiển thị 3 giải thưởng chính (Nhất - Nhì - Ba).',
                 data: {
                     items: [
-                        { title: 'Giải Nhất', description: 'Giải thưởng cao nhất', value: '100 Triệu VNĐ', highlight: true },
-                        { title: 'Giải Nhì', description: 'Giải thưởng hạng nhì', value: '50 Triệu VNĐ', highlight: true },
-                        { title: 'Giải Ba', description: 'Giải thưởng hạng ba', value: '20 Triệu VNĐ', highlight: true }
+                        { title: 'Giải Nhất', value: '5.000.000 VNĐ', highlight: true },
+                        { title: 'Giải Nhì', value: '3.000.000 VNĐ', highlight: true },
+                        { title: 'Giải Ba', value: '1.000.000 VNĐ', highlight: true }
                     ]
                 }
             },
             {
-                label: 'Danh hiệu & Chứng nhận',
-                description: 'Không có giá trị tiền, chỉ hiển thị tên và mô tả.',
+                label: 'Đầy Đủ (5 Giải)',
+                description: 'Bảng giải đầy đủ với giải chính và giải phụ.',
                 data: {
                     items: [
-                        { title: 'Giải Sáng tạo', description: 'Dành cho ý tưởng đột phá nhất', value: '', highlight: false },
-                        { title: 'Giải Cống hiến', description: 'Dành cho thành viên lâu năm', value: '', highlight: false },
-                        { title: 'Giải Triển vọng', description: 'Dành cho nhân tố mới nổi bật', value: '', highlight: false }
+                        { title: 'Giải Nhất', value: '5.000.000 VNĐ', highlight: true },
+                        { title: 'Giải Nhì', value: '3.000.000 VNĐ', highlight: true },
+                        { title: 'Giải Ba', value: '1.000.000 VNĐ', highlight: true },
+                        { title: 'Giải Khuyến Khích', value: '500.000 VNĐ', multiplier: '2x' },
+                        { title: 'Giải Bình Chọn', value: '500.000 VNĐ' }
+                    ]
+                }
+            },
+            {
+                label: 'Có Mô Tả',
+                description: 'Giải thưởng kèm mô tả chi tiết.',
+                data: {
+                    items: [
+                        { title: 'Giải Nhất', description: 'Bao gồm tiền mặt, giấy khen và quà tặng', value: '5.000.000 VNĐ', highlight: true },
+                        { title: 'Giải Nhì', description: 'Bao gồm tiền mặt và giấy khen', value: '3.000.000 VNĐ', highlight: true }
+                    ]
+                }
+            },
+            {
+                label: 'Danh Hiệu',
+                description: 'Chỉ hiển thị tên và mô tả, không có giá trị tiền.',
+                data: {
+                    items: [
+                        { title: 'Giải Sáng Tạo', description: 'Dành cho ý tưởng đột phá' },
+                        { title: 'Giải Cống Hiến', description: 'Dành cho thành viên lâu năm' },
+                        { title: 'Giải Triển Vọng', description: 'Dành cho nhân tố mới' }
                     ]
                 }
             }
@@ -355,22 +451,138 @@ const COMPONENT_TYPES = [
         icon: MousePointerClick,
         description: 'Nút bấm kêu gọi hành động',
         color: 'bg-green-50 text-green-600',
-        defaultData: { label: 'Click Me', link: '#', style: 'primary', size: 'medium', align: 'center' },
+        defaultData: { 
+            label: '', 
+            link: '#', 
+            style: 'primary', 
+            size: 'medium', 
+            align: 'center' 
+        },
         presets: [
             {
-                label: 'Đăng ký ngay',
-                description: 'Nút nổi bật (Màu chủ đạo), kích thước lớn.',
-                data: { label: 'Đăng Ký Ngay', link: '#register', style: 'primary', size: 'large', align: 'center', icon: true }
+                label: 'Nút Chính (Primary)',
+                description: 'Nút màu chủ đạo, nổi bật nhất.',
+                data: { 
+                    label: 'Đăng Ký Ngay', 
+                    link: '#', 
+                    style: 'primary', 
+                    size: 'large', 
+                    align: 'center' 
+                }
             },
             {
-                label: 'Khám phá',
-                description: 'Nút màu tối (Secondary), trang trọng.',
-                data: { label: 'Khám Phá Ngay', link: '#explore', style: 'secondary', size: 'medium', align: 'center', icon: true }
+                label: 'Nút Phụ (Secondary)',
+                description: 'Nút màu tối, trang trọng.',
+                data: { 
+                    label: 'Tìm Hiểu Thêm', 
+                    link: '#', 
+                    style: 'secondary', 
+                    size: 'medium', 
+                    align: 'center' 
+                }
             },
             {
-                label: 'Tìm hiểu thêm',
-                description: 'Nút viền (Outline), tinh tế.',
-                data: { label: 'Tìm Hiểu Thêm', link: '#learn-more', style: 'outline', size: 'medium', align: 'center' }
+                label: 'Nút Viền (Outline)',
+                description: 'Nút viền tinh tế, không nổi bật.',
+                data: { 
+                    label: 'Xem Chi Tiết', 
+                    link: '#', 
+                    style: 'outline', 
+                    size: 'medium', 
+                    align: 'center' 
+                }
+            },
+            {
+                label: 'Nút Nhỏ',
+                description: 'Nút kích thước nhỏ gọn.',
+                data: { 
+                    label: 'Xem thêm', 
+                    link: '#', 
+                    style: 'primary', 
+                    size: 'small', 
+                    align: 'center' 
+                }
+            },
+            {
+                label: 'Nút Lớn',
+                description: 'Nút kích thước lớn, thu hút sự chú ý.',
+                data: { 
+                    label: 'Bắt Đầu Ngay', 
+                    link: '#', 
+                    style: 'primary', 
+                    size: 'large', 
+                    align: 'center' 
+                }
+            }
+        ]
+    },
+    {
+        type: 'ContactForm',
+        label: 'Contact Form Block',
+        icon: Mail,
+        description: 'Biểu mẫu liên hệ',
+        color: 'bg-indigo-50 text-indigo-600',
+        defaultData: {
+            blockTitle: '',
+            blockSubtitle: '',
+            showContactInfo: false,
+            formFields: ['name', 'email', 'message']
+        },
+        presets: [
+            {
+                label: 'Chỉ Form',
+                description: 'Chỉ có form liên hệ, không hiển thị thông tin liên hệ.',
+                data: {
+                    blockTitle: 'Liên hệ với chúng tôi',
+                    blockSubtitle: 'Gửi tin nhắn và chúng tôi sẽ phản hồi sớm',
+                    showContactInfo: false,
+                    formFields: ['name', 'email', 'message']
+                }
+            },
+            {
+                label: 'Form + Thông Tin',
+                description: 'Form kèm thông tin liên hệ (email, phone, address).',
+                data: {
+                    blockTitle: 'Liên hệ với chúng tôi',
+                    blockSubtitle: 'Gửi tin nhắn hoặc liên hệ trực tiếp',
+                    showContactInfo: true,
+                    contactInfo: {
+                        email: 'contact@example.com',
+                        phone: '(+84) 123 456 789',
+                        address: '123 Đường ABC, Quận 1, TP.HCM'
+                    },
+                    formFields: ['name', 'email', 'message']
+                }
+            },
+            {
+                label: 'Form Đầy Đủ',
+                description: 'Form với tất cả trường (name, email, phone, subject, message).',
+                data: {
+                    blockTitle: 'Liên hệ với chúng tôi',
+                    blockSubtitle: 'Điền đầy đủ thông tin để được hỗ trợ tốt nhất',
+                    showContactInfo: true,
+                    contactInfo: {
+                        email: 'support@company.com',
+                        phone: '(+84) 123 456 789',
+                        address: '123 Đường ABC, Quận 1, TP.HCM'
+                    },
+                    formFields: ['name', 'email', 'phone', 'subject', 'message']
+                }
+            },
+            {
+                label: 'Form Hỗ Trợ',
+                description: 'Form dành cho yêu cầu hỗ trợ kỹ thuật.',
+                data: {
+                    blockTitle: 'Yêu cầu hỗ trợ',
+                    blockSubtitle: 'Đội ngũ kỹ thuật sẽ hỗ trợ bạn trong 2h',
+                    showContactInfo: true,
+                    contactInfo: {
+                        email: 'support@company.com',
+                        phone: 'Hotline: 1900 xxxx',
+                        address: 'Hỗ trợ 24/7'
+                    },
+                    formFields: ['name', 'email', 'phone', 'subject', 'message']
+                }
             }
         ]
     }

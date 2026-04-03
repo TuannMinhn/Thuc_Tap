@@ -62,4 +62,4 @@ const CTA = ({ data, isEditing }) => {
     );
 };
 
-export default CTA;
+export default React.memo(CTA);

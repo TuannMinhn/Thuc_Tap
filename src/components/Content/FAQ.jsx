@@ -44,4 +44,4 @@ const FAQ = ({ data }) => {
     );
 };
 
-export default FAQ;
+export default React.memo(FAQ);

@@ -1,5 +1,6 @@
 export const landingPageConfig = {
     header: {
+        showHeader: true, // NEW: Show/hide header
         title: "KHOA CNTT",
         logo: "https://cdn.haitrieu.com/wp-content/uploads/2022/03/Logo-LHU-Dai-Hoc-Lac-Hong-Horizontal-02.png",
         backgroundColor: "bg-white",
@@ -7,51 +8,28 @@ export const landingPageConfig = {
         menuItems: [
             { label: "Trang chủ", link: "#hero" },
             { label: "Giới thiệu", link: "#gioi-thieu" },
-            { label: "Đào tạo", link: "#dao-tao" },
+            { 
+                label: "Đào tạo", 
+                link: "#dao-tao",
+                children: [
+                    { label: "Kỹ Thuật Phần Mềm", link: "#dao-tao" },
+                    { label: "Trí Tuệ Nhân Tạo", link: "#dao-tao" },
+                    { label: "Khoa Học Dữ Liệu", link: "#dao-tao" },
+                    { label: "An Toàn Thông Tin", link: "#dao-tao" }
+                ]
+            },
             { label: "Thống kê", link: "#thong-ke" },
             { label: "Liên hệ", link: "#lien-he" },
-        ]
+        ],
+        ctaButtonLabel: "Liên hệ",
+        ctaButtonLink: "#lien-he"
     },
     footer: {
         showFooter: true,
         backgroundColor: "bg-slate-900",
         textColor: "text-white",
         copyrightText: "© 2026 Khoa CNTT – Trường XYZ. Đơn vị quản lý: Khoa CNTT | Email: cntt@xyz.edu.vn",
-        columns: [
-            {
-                type: "FooterColumn",
-                data: {
-                    title: "Thông tin",
-                    content: "Khoa CNTT - Nơi khởi đầu đam mê công nghệ.",
-                    address: "Số 10 Huỳnh Văn Nghệ, Bửu Long, Biên Hòa, Đồng Nai",
-                    phone: "(+84) 251 3 952 251",
-                    email: "cntt@xyz.edu.vn"
-                }
-            },
-            {
-                type: "FooterColumn",
-                data: {
-                    title: "Liên kết",
-                    links: [
-                        { label: "Giới thiệu", link: "#gioi-thieu" },
-                        { label: "Đào tạo", link: "#dao-tao" },
-                        { label: "Tuyển sinh", link: "#" },
-                        { label: "Liên hệ", link: "#lien-he" }
-                    ]
-                }
-            },
-            {
-                type: "FooterColumn",
-                data: {
-                    title: "Mạng xã hội",
-                    socialLinks: [
-                        { platform: "facebook", url: "#" },
-                        { platform: "zalo", url: "#" },
-                        { platform: "youtube", url: "#" }
-                    ]
-                }
-            }
-        ]
+        columns: []
     },
     sections: [
         {
@@ -210,6 +188,46 @@ export const landingPageConfig = {
         },
         {
             id: "dao-tao",
+            
+            // Preview cho landing page
+            preview: {
+                title: "Chương Trình Đào Tạo",
+                subtitle: "Đào tạo chất lượng cao",
+                description: "4 chuyên ngành đào tạo: Kỹ Thuật Phần Mềm, Trí Tuệ Nhân Tạo, Khoa Học Dữ Liệu, và An Toàn Thông Tin. Chương trình được thiết kế theo chuẩn quốc tế với đội ngũ giảng viên giàu kinh nghiệm.",
+                image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=800",
+                icon: "🎓",
+                ctaText: "Xem chi tiết",
+                ctaLink: "/landing/dao-tao"
+            },
+            
+            // Detail cho detail page
+            detail: {
+                hero: {
+                    title: "Chương Trình Đào Tạo",
+                    subtitle: "Đào tạo kỹ sư công nghệ thông tin chất lượng cao, đáp ứng nhu cầu thị trường"
+                },
+                additionalContent: `
+                    <h2 class="text-3xl font-bold mb-4">Mục tiêu đào tạo</h2>
+                    <p class="text-lg mb-6">Chương trình đào tạo của Khoa CNTT hướng đến việc trang bị cho sinh viên kiến thức chuyên sâu, kỹ năng thực hành và tư duy sáng tạo trong lĩnh vực công nghệ thông tin.</p>
+                    
+                    <h2 class="text-3xl font-bold mb-4 mt-8">Cấu trúc chương trình</h2>
+                    <ul class="list-disc list-inside text-lg space-y-2 mb-6">
+                        <li>Kiến thức nền tảng: 40 tín chỉ (Toán, Lý, Tiếng Anh)</li>
+                        <li>Kiến thức chuyên ngành: 60 tín chỉ (Lập trình, Cơ sở dữ liệu, Mạng máy tính...)</li>
+                        <li>Thực tập và đồ án: 20 tín chỉ</li>
+                        <li>Tổng cộng: 120 tín chỉ (4 năm)</li>
+                    </ul>
+                    
+                    <h2 class="text-3xl font-bold mb-4 mt-8">Phương pháp giảng dạy</h2>
+                    <p class="text-lg mb-4">Kết hợp giữa lý thuyết và thực hành, học qua dự án thực tế, làm việc nhóm và thuyết trình.</p>
+                `,
+                relatedSections: ["tuyen-sinh", "faq"],
+                cta: {
+                    text: "Đăng ký tư vấn",
+                    link: "#lien-he"
+                }
+            },
+            
             layout: "3-col",
             style: {
                 backgroundColor: "bg-white",
@@ -328,6 +346,51 @@ export const landingPageConfig = {
         },
         {
             id: "tuyen-sinh",
+            
+            // Preview cho landing page
+            preview: {
+                title: "Tuyển Sinh",
+                subtitle: "Quy trình đơn giản",
+                description: "3 bước đơn giản để trở thành sinh viên Khoa CNTT. Đăng ký trực tuyến, nộp hồ sơ và nhận giấy báo trúng tuyển. Chúng tôi luôn sẵn sàng hỗ trợ bạn trong suốt quá trình.",
+                image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800",
+                icon: "📝",
+                ctaText: "Xem quy trình",
+                ctaLink: "/landing/tuyen-sinh"
+            },
+            
+            // Detail cho detail page
+            detail: {
+                hero: {
+                    title: "Quy Trình Tuyển Sinh",
+                    subtitle: "Hướng dẫn chi tiết từng bước để trở thành sinh viên Khoa CNTT"
+                },
+                additionalContent: `
+                    <h2 class="text-3xl font-bold mb-4">Điều kiện xét tuyển</h2>
+                    <ul class="list-disc list-inside text-lg space-y-2 mb-6">
+                        <li>Tốt nghiệp THPT hoặc tương đương</li>
+                        <li>Điểm thi THPT Quốc gia đạt yêu cầu (từ 18 điểm trở lên)</li>
+                        <li>Ưu tiên thí sinh có chứng chỉ tin học, ngoại ngữ</li>
+                    </ul>
+                    
+                    <h2 class="text-3xl font-bold mb-4 mt-8">Hồ sơ cần thiết</h2>
+                    <ul class="list-disc list-inside text-lg space-y-2 mb-6">
+                        <li>Bằng tốt nghiệp THPT (bản sao công chứng)</li>
+                        <li>Học bạ THPT (bản sao công chứng)</li>
+                        <li>Giấy khai sinh (bản sao)</li>
+                        <li>4 ảnh 3x4 (chụp trong vòng 6 tháng)</li>
+                        <li>Phiếu đăng ký xét tuyển</li>
+                    </ul>
+                    
+                    <h2 class="text-3xl font-bold mb-4 mt-8">Thời gian tuyển sinh</h2>
+                    <p class="text-lg mb-4">Đợt 1: Tháng 3 - Tháng 5<br>Đợt 2: Tháng 6 - Tháng 8</p>
+                `,
+                relatedSections: ["dao-tao", "faq"],
+                cta: {
+                    text: "Đăng ký ngay",
+                    link: "#lien-he"
+                }
+            },
+            
             layout: "1-col",
             style: {
                 backgroundColor: "bg-blue-50",

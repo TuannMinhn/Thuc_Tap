@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import PageBuilder from './components/Builder/PageBuilder';
-import Dashboard from './components/Dashboard/Dashboard'; // Import Dashboard
+import Dashboard from './components/Dashboard/Dashboard';
+import LandingPage from './pages/LandingPage';
+import SectionDetailPage from './pages/SectionDetailPage';
 import { BuilderProvider, useBuilder } from './context/BuilderContext';
 import EditorToolbar from './components/Editor/EditorToolbar';
 import PropertyModal from './components/Editor/PropertyModal';
@@ -58,9 +60,20 @@ function App() {
     <BrowserRouter>
       <BuilderProvider>
         <Routes>
+          {/* Dashboard - Admin panel (trang chủ để chọn làm tiếp hay tạo mới) */}
           <Route path="/" element={<Dashboard />} />
-          <Route path="/preview" element={<RouteHandler mode="public" />} />
+          
+          {/* Editor - Page builder */}
           <Route path="/editor" element={<RouteHandler mode="admin" />} />
+          
+          {/* Preview - Old preview mode */}
+          <Route path="/preview" element={<RouteHandler mode="public" />} />
+          
+          {/* Landing Page - Public landing page with previews */}
+          <Route path="/landing" element={<LandingPage />} />
+          
+          {/* Section Detail Pages - Dynamic routes */}
+          <Route path="/landing/:sectionId" element={<SectionDetailPage />} />
         </Routes>
       </BuilderProvider>
     </BrowserRouter>

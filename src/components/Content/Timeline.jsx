@@ -81,4 +81,4 @@ const Timeline = ({ data }) => {
     );
 };
 
-export default Timeline;
+export default React.memo(Timeline);

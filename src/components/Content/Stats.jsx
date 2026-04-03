@@ -83,4 +83,4 @@ const Stats = ({ data, isEditing }) => {
     );
 };
 
-export default Stats;
+export default React.memo(Stats);

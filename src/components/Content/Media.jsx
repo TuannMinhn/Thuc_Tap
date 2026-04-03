@@ -91,4 +91,4 @@ const Media = ({ data, isEditing }) => {
     );
 };
 
-export default Media;
+export default React.memo(Media);

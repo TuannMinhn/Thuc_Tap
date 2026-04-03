@@ -36,54 +36,32 @@ export const BuilderProvider = ({ children }) => {
     // Save status for loading states
     const [saveStatus, setSaveStatus] = useState(null); // null | 'saving' | 'saved'
 
-    // Save to LocalStorage whenever config changes
+    // Save to LocalStorage whenever config changes - OPTIMIZED: debounced
     useEffect(() => {
-        const activeDraftId = localStorage.getItem('activeDraftId') || 'draft_cntt';
-        localStorage.setItem(activeDraftId, JSON.stringify(config));
+        // Debounce: wait 500ms after last change before saving
+        const timer = setTimeout(() => {
+            const activeDraftId = localStorage.getItem('activeDraftId') || 'draft_cntt';
+            localStorage.setItem(activeDraftId, JSON.stringify(config));
 
-        // Show save status
-        setSaveStatus('saved');
-        const timer = setTimeout(() => setSaveStatus(null), 2000);
+            // Show save status
+            setSaveStatus('saved');
+            const statusTimer = setTimeout(() => setSaveStatus(null), 2000);
+            return () => clearTimeout(statusTimer);
+        }, 500);
+
         return () => clearTimeout(timer);
     }, [config]);
-
-    // Keyboard shortcuts for Undo/Redo
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                e.preventDefault();
-                undo();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
-                e.preventDefault();
-                redo();
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [history, config]); // Dependencies are crucial here
 
     // Refs for accessing latest state in stable callbacks
     const configRef = React.useRef(config);
     const historyRef = React.useRef(history);
+    const undoRef = React.useRef(null);
+    const redoRef = React.useRef(null);
 
     useEffect(() => {
         configRef.current = config;
         historyRef.current = history;
     }, [config, history]);
-
-    const saveHistory = React.useCallback(() => {
-        const currentConfig = configRef.current;
-        setHistory(prev => {
-            const newPast = [...prev.past, currentConfig];
-            if (newPast.length > 50) newPast.shift(); // Limit history
-            return {
-                past: newPast,
-                future: []
-            };
-        });
-    }, []);
 
     const undo = React.useCallback(() => {
         const currentHistory = historyRef.current;
@@ -111,6 +89,41 @@ export const BuilderProvider = ({ children }) => {
             future: newFuture
         });
         setConfig(next);
+    }, []);
+
+    // Update refs when undo/redo functions change
+    useEffect(() => {
+        undoRef.current = undo;
+        redoRef.current = redo;
+    }, [undo, redo]);
+
+    // Keyboard shortcuts for Undo/Redo - OPTIMIZED: listener only created once
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                undoRef.current?.();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                e.preventDefault();
+                redoRef.current?.();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []); // ✅ Empty dependency array - listener created only once
+
+    const saveHistory = React.useCallback(() => {
+        const currentConfig = configRef.current;
+        setHistory(prev => {
+            const newPast = [...prev.past, currentConfig];
+            if (newPast.length > 50) newPast.shift(); // Limit history
+            return {
+                past: newPast,
+                future: []
+            };
+        });
     }, []);
 
     const updateHeader = React.useCallback((newHeader) => {

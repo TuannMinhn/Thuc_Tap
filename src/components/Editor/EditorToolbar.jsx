@@ -17,60 +17,15 @@ const EditorToolbar = () => {
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-            {/* Undo/Redo Buttons */}
-            {isEditing && (
-                <div className="flex gap-2 mb-2">
-                    <button
-                        onClick={actions.undo}
-                        disabled={!history?.past?.length}
-                        className={`p-3 rounded-full shadow-lg transition-all flex items-center justify-center
-                            ${history?.past?.length
-                                ? 'bg-white text-gray-700 hover:bg-gray-50'
-                                : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                            }`}
-                        title="Undo (Ctrl+Z)"
-                    >
-                        <RotateCcw size={20} />
-                    </button>
-                    <button
-                        onClick={actions.redo}
-                        disabled={!history?.future?.length}
-                        className={`p-3 rounded-full shadow-lg transition-all flex items-center justify-center
-                            ${history?.future?.length
-                                ? 'bg-white text-gray-700 hover:bg-gray-50'
-                                : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                            }`}
-                        title="Redo (Ctrl+Y)"
-                    >
-                        <RotateCw size={20} />
-                    </button>
-                </div>
-            )}
-
-            <button
-                onClick={() => window.open('/preview', '_blank')}
-                className="bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-all flex items-center justify-center tooltip-container"
-                title="Xem trang thực tế (New Tab)"
-            >
-                <ExternalLink size={24} />
-            </button>
-            {isEditing && (
-                <button
-                    onClick={handleExport}
-                    className="bg-green-600 text-white p-4 rounded-full shadow-lg hover:bg-green-700 transition-all flex items-center justify-center tooltip-container"
-                    title="Export JSON"
-                >
-                    <Download size={24} />
-                </button>
-            )}
-
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 md:bottom-6 md:right-6 max-md:bottom-4 max-md:right-4">
+            {/* Toggle Edit/View Mode */}
             <button
                 onClick={() => setIsEditing(!isEditing)}
-                className={`${isEditing ? 'bg-blue-600' : 'bg-gray-800'} text-white p-4 rounded-full shadow-lg hover:opacity-90 transition-all flex items-center justify-center`}
-                title={isEditing ? "Preview Mode" : "Edit Mode"}
+                className={`${isEditing ? 'bg-blue-600' : 'bg-gray-800'} text-white p-4 rounded-full shadow-lg hover:opacity-90 hover:scale-105 transition-all flex items-center justify-center max-md:p-3`}
+                title={isEditing ? "Chế độ xem" : "Chế độ chỉnh sửa"}
+                aria-label={isEditing ? "Chế độ xem trước" : "Chế độ chỉnh sửa"}
             >
-                {isEditing ? <Eye size={24} /> : <Edit2 size={24} />}
+                {isEditing ? <Eye size={24} className="max-md:w-5 max-md:h-5" /> : <Edit2 size={24} className="max-md:w-5 max-md:h-5" />}
             </button>
         </div>
     );

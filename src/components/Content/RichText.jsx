@@ -90,4 +90,4 @@ const RichText = ({ data, isEditing }) => {
     );
 };
 
-export default RichText;
+export default React.memo(RichText);

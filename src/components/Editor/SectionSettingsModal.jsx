@@ -440,7 +440,7 @@ const SectionSettingsModal = () => {
 
                                     {/* Content */}
                                     {colorMode === 'preset' ? (
-                                        <div className="grid grid-cols-4 gap-2 animate-in fade-in slide-in-from-top-1">
+                                        <div className="grid grid-cols-6 gap-2 animate-in fade-in slide-in-from-top-1 max-h-64 overflow-y-auto p-1">
                                             {BG_OPTIONS.map((bg) => (
                                                 <button
                                                     key={bg.value}
@@ -613,13 +613,86 @@ const FullWidthIcon = () => (
 );
 
 const BG_OPTIONS = [
+    // Màu trắng & xám
     { value: 'bg-white', label: 'White', class: 'bg-white', textColor: 'text-gray-900' },
     { value: 'bg-gray-50', label: 'Light Gray', class: 'bg-gray-50', textColor: 'text-gray-900' },
-    { value: 'bg-blue-50', label: 'Light Blue', class: 'bg-blue-50', textColor: 'text-blue-900' },
+    { value: 'bg-gray-100', label: 'Gray 100', class: 'bg-gray-100', textColor: 'text-gray-900' },
+    { value: 'bg-gray-200', label: 'Gray 200', class: 'bg-gray-200', textColor: 'text-gray-900' },
+    { value: 'bg-gray-800', label: 'Dark Gray', class: 'bg-gray-800', textColor: 'text-white' },
+    { value: 'bg-gray-900', label: 'Gray 900', class: 'bg-gray-900', textColor: 'text-white' },
     { value: 'bg-slate-900', label: 'Dark Slate', class: 'bg-slate-900', textColor: 'text-white' },
+    { value: 'bg-black', label: 'Black', class: 'bg-black', textColor: 'text-white' },
+    
+    // Màu xanh dương (Blue)
+    { value: 'bg-blue-50', label: 'Light Blue', class: 'bg-blue-50', textColor: 'text-blue-900' },
+    { value: 'bg-blue-100', label: 'Blue 100', class: 'bg-blue-100', textColor: 'text-blue-900' },
+    { value: 'bg-blue-500', label: 'Blue 500', class: 'bg-blue-500', textColor: 'text-white' },
+    { value: 'bg-blue-600', label: 'Blue 600', class: 'bg-blue-600', textColor: 'text-white' },
+    { value: 'bg-blue-700', label: 'Blue 700', class: 'bg-blue-700', textColor: 'text-white' },
     { value: 'bg-blue-900', label: 'Dark Blue', class: 'bg-blue-900', textColor: 'text-white' },
+    
+    // Màu xanh lá (Green)
+    { value: 'bg-green-50', label: 'Light Green', class: 'bg-green-50', textColor: 'text-green-900' },
+    { value: 'bg-green-100', label: 'Green 100', class: 'bg-green-100', textColor: 'text-green-900' },
+    { value: 'bg-green-500', label: 'Green 500', class: 'bg-green-500', textColor: 'text-white' },
+    { value: 'bg-green-600', label: 'Green 600', class: 'bg-green-600', textColor: 'text-white' },
+    { value: 'bg-green-700', label: 'Green 700', class: 'bg-green-700', textColor: 'text-white' },
+    
+    // Màu đỏ (Red)
+    { value: 'bg-red-50', label: 'Light Red', class: 'bg-red-50', textColor: 'text-red-900' },
+    { value: 'bg-red-100', label: 'Red 100', class: 'bg-red-100', textColor: 'text-red-900' },
+    { value: 'bg-red-500', label: 'Red 500', class: 'bg-red-500', textColor: 'text-white' },
+    { value: 'bg-red-600', label: 'Red 600', class: 'bg-red-600', textColor: 'text-white' },
+    { value: 'bg-red-700', label: 'Red 700', class: 'bg-red-700', textColor: 'text-white' },
+    
+    // Màu vàng (Yellow)
+    { value: 'bg-yellow-50', label: 'Light Yellow', class: 'bg-yellow-50', textColor: 'text-yellow-900' },
+    { value: 'bg-yellow-100', label: 'Yellow 100', class: 'bg-yellow-100', textColor: 'text-yellow-900' },
+    { value: 'bg-yellow-400', label: 'Yellow 400', class: 'bg-yellow-400', textColor: 'text-yellow-900' },
+    { value: 'bg-yellow-500', label: 'Yellow 500', class: 'bg-yellow-500', textColor: 'text-yellow-900' },
+    
+    // Màu cam (Orange)
+    { value: 'bg-orange-50', label: 'Light Orange', class: 'bg-orange-50', textColor: 'text-orange-900' },
+    { value: 'bg-orange-100', label: 'Orange 100', class: 'bg-orange-100', textColor: 'text-orange-900' },
+    { value: 'bg-orange-500', label: 'Orange 500', class: 'bg-orange-500', textColor: 'text-white' },
+    { value: 'bg-orange-600', label: 'Orange 600', class: 'bg-orange-600', textColor: 'text-white' },
+    
+    // Màu tím (Purple)
+    { value: 'bg-purple-50', label: 'Light Purple', class: 'bg-purple-50', textColor: 'text-purple-900' },
+    { value: 'bg-purple-100', label: 'Purple 100', class: 'bg-purple-100', textColor: 'text-purple-900' },
+    { value: 'bg-purple-500', label: 'Purple 500', class: 'bg-purple-500', textColor: 'text-white' },
+    { value: 'bg-purple-600', label: 'Purple 600', class: 'bg-purple-600', textColor: 'text-white' },
+    { value: 'bg-purple-700', label: 'Purple 700', class: 'bg-purple-700', textColor: 'text-white' },
+    
+    // Màu hồng (Pink)
+    { value: 'bg-pink-50', label: 'Light Pink', class: 'bg-pink-50', textColor: 'text-pink-900' },
+    { value: 'bg-pink-100', label: 'Pink 100', class: 'bg-pink-100', textColor: 'text-pink-900' },
+    { value: 'bg-pink-500', label: 'Pink 500', class: 'bg-pink-500', textColor: 'text-white' },
+    { value: 'bg-pink-600', label: 'Pink 600', class: 'bg-pink-600', textColor: 'text-white' },
+    
+    // Màu xanh lơ (Cyan/Teal)
+    { value: 'bg-cyan-50', label: 'Light Cyan', class: 'bg-cyan-50', textColor: 'text-cyan-900' },
+    { value: 'bg-cyan-100', label: 'Cyan 100', class: 'bg-cyan-100', textColor: 'text-cyan-900' },
+    { value: 'bg-cyan-500', label: 'Cyan 500', class: 'bg-cyan-500', textColor: 'text-white' },
+    { value: 'bg-cyan-600', label: 'Cyan 600', class: 'bg-cyan-600', textColor: 'text-white' },
+    { value: 'bg-teal-500', label: 'Teal 500', class: 'bg-teal-500', textColor: 'text-white' },
+    { value: 'bg-teal-600', label: 'Teal 600', class: 'bg-teal-600', textColor: 'text-white' },
+    
+    // Màu chàm (Indigo)
+    { value: 'bg-indigo-50', label: 'Light Indigo', class: 'bg-indigo-50', textColor: 'text-indigo-900' },
+    { value: 'bg-indigo-100', label: 'Indigo 100', class: 'bg-indigo-100', textColor: 'text-indigo-900' },
+    { value: 'bg-indigo-500', label: 'Indigo 500', class: 'bg-indigo-500', textColor: 'text-white' },
+    { value: 'bg-indigo-600', label: 'Indigo 600', class: 'bg-indigo-600', textColor: 'text-white' },
+    
+    // Gradient (Màu chuyển sắc)
     { value: 'bg-gradient-to-r from-blue-700 to-cyan-500', label: 'Ocean Gradient', class: 'bg-gradient-to-r from-blue-700 to-cyan-500', textColor: 'text-white' },
     { value: 'bg-gradient-to-r from-purple-700 to-indigo-600', label: 'Purple Gradient', class: 'bg-gradient-to-r from-purple-700 to-indigo-600', textColor: 'text-white' },
+    { value: 'bg-gradient-to-r from-pink-500 to-rose-500', label: 'Pink Gradient', class: 'bg-gradient-to-r from-pink-500 to-rose-500', textColor: 'text-white' },
+    { value: 'bg-gradient-to-r from-green-400 to-blue-500', label: 'Green-Blue Gradient', class: 'bg-gradient-to-r from-green-400 to-blue-500', textColor: 'text-white' },
+    { value: 'bg-gradient-to-r from-yellow-400 to-orange-500', label: 'Sunset Gradient', class: 'bg-gradient-to-r from-yellow-400 to-orange-500', textColor: 'text-white' },
+    { value: 'bg-gradient-to-r from-red-500 to-pink-500', label: 'Red-Pink Gradient', class: 'bg-gradient-to-r from-red-500 to-pink-500', textColor: 'text-white' },
+    { value: 'bg-gradient-to-r from-indigo-500 to-purple-600', label: 'Indigo-Purple Gradient', class: 'bg-gradient-to-r from-indigo-500 to-purple-600', textColor: 'text-white' },
+    { value: 'bg-gradient-to-r from-gray-700 to-gray-900', label: 'Dark Gradient', class: 'bg-gradient-to-r from-gray-700 to-gray-900', textColor: 'text-white' },
 ];
 
 export default SectionSettingsModal;
